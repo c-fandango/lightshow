@@ -18,7 +18,7 @@ cid='080f0dda7db742c5ba6d3fa8dd246067'
 secret= '5fc96e36afa041618def8e87956a1649'
 uri='https://google.co.uk'
 scope='user-read-currently-playing'
-
+'''tester'''
 
 sp=spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=cid,client_secret=secret,redirect_uri=uri, scope=scope, open_browser=False,cache_path='/home/pi/Code/light-show/text'))
 #print(sp.currently_playing())
