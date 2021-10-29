@@ -29,6 +29,7 @@ while True:
     status=sp.currently_playing()
     if status==None:
         matrix.Clear()
+        image_url=''
         time.sleep(5)
     else:
         track_type=sp.currently_playing()['currently_playing_type']
