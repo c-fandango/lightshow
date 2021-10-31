@@ -11,7 +11,7 @@ while disconnected:
     try:
         request=requests.get("https://www.google.co.uk/",timeout=5)
         print("Connected To Internet")
-        disconnected=True
+        disconnected=False
     except (requests.ConnectionError,requests.Timeout) as exception:
         print("No Internet")
         time.sleep(1)
