@@ -1,10 +1,22 @@
-from typing import Type
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 import spotipy
 from spotipy.oauth2 import  SpotifyOAuth
 import requests
 import time
 from PIL import Image
+
+disconnected=True
+
+while disconnected:
+    try:
+        request=requests.get("https://www.google.co.uk/",timeout=5)
+        print("Connected To Internet")
+        disconnected=True
+    except (requests.ConnectionError,requests.Timeout) as exception:
+        print("No Internet")
+        time.sleep(1)
+
+
 
 options=RGBMatrixOptions()
 options.rows=64
@@ -38,8 +50,6 @@ while True:
             image_url=sp.currently_playing(additional_types='episode')['item']['images'][2]['url']
         elif track_type=='track':
             image_url=sp.currently_playing()['item']['album']['images'][2]['url']
-
-
     
         if image_url != image_url_prev:
             image=requests.get(image_url).content
@@ -47,7 +57,6 @@ while True:
                 file.write(image)
             image2=Image.open('/home/pi/Code/light-show/album_art.jpg')
             matrix.SetImage(image2.convert('RGB'))
-
         
         time.sleep(4)
         image_url_prev=image_url
