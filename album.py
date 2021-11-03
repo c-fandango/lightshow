@@ -36,14 +36,20 @@ sp=spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=cid,client_secret=secret,
 #print(sp.currently_playing())
 print('authorised')
 image_url_prev='.'
-
+image_url=''
 while True:
     status=sp.currently_playing()
     if status==None:
-        matrix.Clear()
-        image_url=''
+        if image_url != '':
+            matrix.Clear()
+            matrix=''
+            image_url=''
+            image_url_prev=''
+            print('none')
         time.sleep(5)
     else:
+        if matrix=='':
+            matrix=RGBMatrix(options=options)
         track_type=sp.currently_playing()['currently_playing_type']
         print(track_type)
         if track_type=='episode':
