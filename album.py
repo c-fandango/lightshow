@@ -38,7 +38,11 @@ print('authorised')
 image_url_prev='.'
 image_url=''
 while True:
-    status=sp.currently_playing()
+    try:
+        status=sp.currently_playing()
+    except:
+        status = 'bad'
+        print('Poor Connection')
     if status==None:
         if image_url != '':
             matrix.Clear()
@@ -47,7 +51,7 @@ while True:
             image_url_prev=''
             print('none')
         time.sleep(5)
-    else:
+    elif status != 'bad':
         if matrix=='':
             matrix=RGBMatrix(options=options)
         track_type=sp.currently_playing()['currently_playing_type']
