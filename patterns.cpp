@@ -11,58 +11,9 @@ using namespace rgb_matrix;
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
 
-struct ant_struct{
-  int xpos, ypos, orientation, col_r, col_g,col_b;
-  vector<vector<int>> frame;
-};
 
-vector<vector<int>> initialise(int num){
-  vector<vector<int>> output(size,vector<int>(size,0));
-  for (int i=size/2 -num/2; i<size/2 +num/2 +1; ++i){
-    for (int j=size/2 -num/2; j<size/2 +num/2 +1;++j){
-        output[j][i] = rand()%2;
-  
-    }
-  }
-  return output;
-}
 
-ant_struct next_frame(ant_struct input){
-  switch(input.orientation){
-    case 0:
-      ++input.ypos;
-      break;
-    case 1:
-      ++input.xpos;
-      break;
-    case 2:
-      --input.ypos;
-      break;
-    case 3:
-      --input.xpos;
-      break;
-  }
- 
-  switch(input.frame[input.ypos][input.xpos]){
-    case 1:
-      input.orientation = (input.orientation+3)%4;
-      
-      break;
-    case 0:
-      input.orientation = (input.orientation+5)%4;
-      break;
-  }
-  ++input.frame[input.ypos][input.xpos];
-  input.frame[input.ypos][input.xpos] %= 2 ;
-  if (input.xpos==-1 || input.xpos==64 || input.ypos==-1 || input.ypos==64 ){
-    input.col_r=rand()%256;
-    input.col_g=rand()%256;
-    input.col_b=rand()%256;
-  }
-  input.xpos= (input.xpos +size) %size;
-  input.ypos= (input.ypos +size) %size;
-  return input;  
-}
+
 
 int main(int argc, char * argv[]){
   srand(time(0));
@@ -77,8 +28,52 @@ int main(int argc, char * argv[]){
   Canvas *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &defaults);
 
   conway_class con;
-  int frame_num=4000;
-  ant_struct ant;
+  ant_class ant;
+  sand_class sand;
+
+  
+  sand.frame = vector<vector<int>>(size,vector<int>(size,0));
+  sand.wild=true;
+  sand.stable=true;
+  sand.col_1r = 0; sand.col_1g = 0; sand.col_1b = 60; 
+  sand.col_2r = 0; sand.col_2g = 60, sand.col_2b = 40;
+  sand.col_3r = 100; sand.col_3g = 0; sand.col_3b = 130;
+  sand.col_4r = 255; sand.col_4g=0; sand.col_4b=0;
+  if (rand()%3==0){
+    sand.wild=false;
+  }
+  while(sand.frame[size/4][size/2] == 0){
+    if (sand.stable){
+        sand = sand.next_grain(sand);
+    }
+    else{
+      sand=sand.evolve(sand);
+    }
+    for (int i=0;i<size;++i){
+       for (int j=0;j<size;++j){ 
+         switch(sand.frame[i][j]){
+          case 0:
+            break;
+          case 1:
+            canvas-> SetPixel(i,j,sand.col_1r,sand.col_1g,sand.col_1b);
+            break;
+          case 2:
+            canvas-> SetPixel(i,j,sand.col_2r,sand.col_2g,sand.col_2b);
+            break;
+          case 3:
+            canvas-> SetPixel(i,j,sand.col_3r,sand.col_3g,sand.col_3b);
+            break;
+          default:
+            canvas-> SetPixel(i,j,sand.col_4r,sand.col_4g,sand.col_4b);
+            break;
+         }
+       }
+    }
+    usleep(30*1000);
+    canvas->Clear();
+  }
+
+  ant.frame_num=4000;
   ant.xpos=32;
   ant.ypos=32;
   ant.orientation=0;
@@ -86,10 +81,10 @@ int main(int argc, char * argv[]){
   ant.col_g = rand()%256;
   ant.col_b = rand()%256;
 
-  ant.frame = initialise(4);
+  ant.frame = ant.initialise(4);
   
-  for(int n=0;n<frame_num;++n){
-    ant=next_frame(ant);
+  for(int n=0;n<ant.frame_num;++n){
+    ant=ant.next_frame(ant);
     for (int i=0;i<size;++i){
       for(int j=0;j<size;++j){
         if(ant.frame[i][j]==1){
