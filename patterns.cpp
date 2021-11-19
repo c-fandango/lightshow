@@ -130,8 +130,6 @@ int main(int argc, char * argv[]){
     canvas->Clear();
   }
 
-
-
   scatter.ball_col1={255,0,0};
   scatter.ball_col2_1={0,130,100};
   scatter.ball_col2_2={0,180,20};
