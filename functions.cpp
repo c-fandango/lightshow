@@ -59,7 +59,6 @@ vector<vector<int>> ant_class::initialise(int num){
   for (int i=size/2 -num/2; i<size/2 +num/2 +1; ++i){
     for (int j=size/2 -num/2; j<size/2 +num/2 +1;++j){
         output[j][i] = rand()%2;
-  
     }
   }
   return output;
@@ -105,8 +104,8 @@ ant_class ant_class::next_frame(ant_class input){
 sand_class sand_class::next_grain(sand_class input){
     int i, j;
     if (input.wild){
-        i = rand()%4 + size/2 -1;
-        j = rand()%4 + size/2 -1;
+        i = rand()%3 + size/2 -1;
+        j = rand()%3 + size/2 -1;
     }
     else{
         i = size/2;
@@ -124,7 +123,6 @@ sand_class sand_class::next_grain(sand_class input){
 sand_class sand_class::evolve(sand_class input){
   sand_class output= input;
   output.stable=true;
-  /*output.frame=input.frame;*/
   for (int i=1; i<size-1;++i){
     for (int j=1; j<size-1;++j){
       if (input.frame[i][j]>3){
@@ -140,4 +138,141 @@ sand_class sand_class::evolve(sand_class input){
   }
   
   return output;
+}
+
+vector<ball_class> bounce_class::initialise(int num){
+  ball_class start;
+  vector<ball_class> output(num,start);
+  
+  for (int i=0; i<num; ++i){
+    output[i].pos={rand()%size,rand()%size};
+    output[i].vel = {rand()%5-2,rand()%5-2};
+    output[i].col = {rand()%256,rand()%256,rand()%256};
+  }
+  return output;
+}
+
+vector<ball_class> bounce_class::next_frame(vector<ball_class> input){
+  for(int i=0; i<input.size();++i){
+    input[i].pos[0]+=input[i].vel[0];
+    input[i].pos[1]+=input[i].vel[1];
+    if(input[i].pos[0]>63 ){
+      input[i].pos[0] = 63-input[i].pos[0]%size;
+      input[i].vel[0] *= -1;
+    }
+    else if(input[i].pos[0]<0){
+      input[i].pos[0] = 0-input[i].pos[0]%size;
+      input[i].vel[0] *= -1;
+    }
+    if(input[i].pos[1]>63 ){
+      input[i].pos[1] = 63-input[i].pos[1]%size;
+      input[i].vel[1] *= -1;
+    }
+    else if(input[i].pos[1]<0){
+      input[i].pos[1] = 0-input[i].pos[1]%size;
+      input[i].vel[1] *= -1;
+    }
+  }
+  for(int i=0; i<input.size()-1;++i){
+    for(int j=i+1;j<input.size();++j){
+      if(input[i].pos==input[j].pos){
+        swap(input[i].vel, input[j].vel);
+        if(rand()%2==0){
+          input[i].col=input[j].col;
+        }
+        else{
+          input[j].col=input[i].col;
+        }
+      }
+    }
+  }
+return input;
+}
+
+vector<int> bounce_class::mode_func(vector<ball_class> input){
+  vector<int> no_value(3,-1);
+  vector<vector<int>> elements(input.size(),no_value);
+  vector<int> count(input.size(),0);
+  int max=0;
+  for(int i=0; i<input.size(); ++i){
+    for(int j=0; j<elements.size(); ++j){
+      if(input[i].col==elements[j]){
+        ++count[j];
+        if(count[j]>count[max]){
+          max= j;
+        }
+        break;
+      }
+      else if(elements[j] == no_value){
+        elements[j]=input[i].col;
+        ++count[j];
+        break;
+      }
+    }
+  }
+  return elements[max];
+}
+
+scatter_class scatter_class::initialise(scatter_class start){
+  ball_class initial;
+  
+  for (int i=1;i<start.num_rows;++i){
+    for (int j=1; j<i+1;++j){
+      if (true){
+        start.pins[i*(i-1)/2 +j-1][0]=i*2;
+        start.pins[i*(i-1)/2 +j-1][1]=size/2 + 2*(2*j -i -1);
+      }
+    }
+  }
+  if(start.num_streams==1){
+    start.num_balls=150;
+    start.balls=vector<ball_class>(start.num_balls,initial);
+    for (int i=0; i<start.num_balls; ++i){
+      start.balls[i].pos[1]=size/2;
+      start.balls[i].pos[0]=-2*i -1;
+      start.balls[i].col=start.ball_col1;
+    }
+  }
+  else if (start.num_streams==2){
+    start.num_balls=200;
+    start.balls=vector<ball_class>(start.num_balls,initial);
+    for (int i=0; i<start.num_balls; ++i){
+      if (i%2==0){
+        start.balls[i].pos[1]=3*size/8;
+        start.balls[i].col=start.ball_col2_1;
+      }
+      else{
+        start.balls[i].pos[1]=5*size/8;
+        start.balls[i].col=start.ball_col2_2;
+      }
+      start.balls[i].pos[0]=-2*i -1;
+    }
+  }
+return start;
+}
+
+scatter_class scatter_class::evolve(scatter_class input){
+  int end=input.balls.size();
+
+  for(int i=0; i<end;++i){
+    for (int j=0; j<end; ++j){
+      if((input.balls[i].pos[1] == input.balls[j].pos[1] && input.balls[i].pos[0]+1 == input.balls[j].pos[0]) || input.balls[i].pos[0]==size-1 ){
+        --input.balls[i].pos[0];
+        break;
+      }
+    }
+    ++input.balls[i].pos[0];
+    for(int j=0; j<input.pins.size();++j){
+      if(input.balls[i].pos[0]==input.pins[j][0] && input.balls[i].pos[1]==input.pins[j][1]){
+        input.balls[i].vel[0] = ((rand()%2)*2 -1);
+        break;
+      }
+    }
+    
+    input.balls[i].pos[1] += input.balls[i].vel[0];
+    if (input.balls[i].pos[0]== input.num_rows*2-1){
+      input.balls[i].vel[0]=0;
+    }
+  }
+  return input;
 }

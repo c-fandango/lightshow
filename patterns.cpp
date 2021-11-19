@@ -1,6 +1,7 @@
 #include "/home/pi/Code/light-show/libs/led-matrix.h"
 #include <stdlib.h>
 #include <array>
+#include<cmath>
 #include <time.h>
 #include "functions.h"
 #include<unistd.h>
@@ -24,17 +25,63 @@ int main(int argc, char * argv[]){
   defaults.cols=size;
   defaults.chain_length = 1;
   defaults.parallel = 1;
-  defaults.show_refresh_rate = false;
+  defaults.show_refresh_rate = true;
   Canvas *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &defaults);
 
   conway_class con;
   ant_class ant;
   sand_class sand;
+  bounce_class bounce;
+  scatter_class scatter;
 
+  scatter.ball_col1={255,0,0};
+  scatter.ball_col2_1={0,130,100};
+  scatter.ball_col2_2={0,180,20};
+  scatter.pin_col={0,0,150};
   
-  sand.frame = vector<vector<int>>(size,vector<int>(size,0));
-  sand.wild=true;
-  sand.stable=true;
+  if (rand()%2==0){
+    scatter.num_streams=1;
+  }
+  else{
+    scatter.num_streams=2;
+  }
+
+  scatter=scatter.initialise(scatter);
+  
+  for (int n=0;n<scatter.num_balls*2 +size+2;++n){
+    scatter=scatter.evolve(scatter);
+    for (int i=0; i<scatter.balls.size();++i){
+      if(scatter.balls[i].pos[0]>-1){
+      canvas->SetPixel(scatter.balls[i].pos[1],scatter.balls[i].pos[0],scatter.balls[i].col[0],scatter.balls[i].col[1],scatter.balls[i].col[2]);
+      }
+    }
+    for (int i=0; i<scatter.pins.size();++i){
+
+      canvas->SetPixel(scatter.pins[i][1],scatter.pins[i][0],scatter.pin_col[0],scatter.pin_col[1],scatter.pin_col[2]);
+    }
+    usleep(100*1000);
+    canvas->Clear();
+  }
+
+  bounce.num_balls=200;
+  
+  vector<ball_class> balls=bounce.initialise(bounce.num_balls);
+  
+  for(int i=0;i<4000;i++){
+    balls=bounce.next_frame(balls);
+    bounce.mode=bounce.mode_func(balls);
+    for(int i=0; i<balls.size();++i){
+      canvas->SetPixel(balls[i].pos[0],balls[i].pos[1],balls[i].col[0],balls[i].col[1],balls[i].col[2]);
+    }
+    for (int i=size-4; i<size;++i){
+      for (int j=size-4; j<size;++j){
+        canvas->SetPixel(i,j,bounce.mode[0],bounce.mode[1],bounce.mode[2]);
+      }
+    }
+    usleep(80*1000);
+    canvas->Clear();
+  }
+
   sand.col_1r = 0; sand.col_1g = 0; sand.col_1b = 60; 
   sand.col_2r = 0; sand.col_2g = 60, sand.col_2b = 40;
   sand.col_3r = 100; sand.col_3g = 0; sand.col_3b = 130;
@@ -74,9 +121,6 @@ int main(int argc, char * argv[]){
   }
 
   ant.frame_num=4000;
-  ant.xpos=32;
-  ant.ypos=32;
-  ant.orientation=0;
   ant.col_r = rand()%256;
   ant.col_g = rand()%256;
   ant.col_b = rand()%256;
@@ -95,7 +139,6 @@ int main(int argc, char * argv[]){
     canvas-> SetPixel(ant.ypos,ant.xpos,255,255,255);
     usleep(40*1000);
     canvas->Clear();
-
   }
   
   con.frame_num=3000;
