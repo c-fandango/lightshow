@@ -140,9 +140,9 @@ sand_class sand_class::evolve(sand_class input){
   return output;
 }
 
-vector<ball_class> bounce_class::initialise(int num){
-  ball_class start;
-  vector<ball_class> output(num,start);
+vector<particle_class> bounce_class::initialise(int num){
+  particle_class start;
+  vector<particle_class> output(num,start);
   
   for (int i=0; i<num; ++i){
     output[i].pos={rand()%size,rand()%size};
@@ -152,7 +152,7 @@ vector<ball_class> bounce_class::initialise(int num){
   return output;
 }
 
-vector<ball_class> bounce_class::next_frame(vector<ball_class> input){
+vector<particle_class> bounce_class::next_frame(vector<particle_class> input){
   for(int i=0; i<input.size();++i){
     input[i].pos[0]+=input[i].vel[0];
     input[i].pos[1]+=input[i].vel[1];
@@ -189,7 +189,7 @@ vector<ball_class> bounce_class::next_frame(vector<ball_class> input){
 return input;
 }
 
-vector<int> bounce_class::mode_func(vector<ball_class> input){
+vector<int> bounce_class::mode_func(vector<particle_class> input){
   vector<int> no_value(3,-1);
   vector<vector<int>> elements(input.size(),no_value);
   vector<int> count(input.size(),0);
@@ -214,7 +214,7 @@ vector<int> bounce_class::mode_func(vector<ball_class> input){
 }
 
 scatter_class scatter_class::initialise(scatter_class start){
-  ball_class initial;
+  particle_class initial;
   
   for (int i=1;i<start.num_rows;++i){
     for (int j=1; j<i+1;++j){
@@ -226,7 +226,7 @@ scatter_class scatter_class::initialise(scatter_class start){
   }
   if(start.num_streams==1){
     start.num_balls=150;
-    start.balls=vector<ball_class>(start.num_balls,initial);
+    start.balls=vector<particle_class>(start.num_balls,initial);
     for (int i=0; i<start.num_balls; ++i){
       start.balls[i].pos[1]=size/2;
       start.balls[i].pos[0]=-2*i -1;
@@ -235,7 +235,7 @@ scatter_class scatter_class::initialise(scatter_class start){
   }
   else if (start.num_streams==2){
     start.num_balls=200;
-    start.balls=vector<ball_class>(start.num_balls,initial);
+    start.balls=vector<particle_class>(start.num_balls,initial);
     for (int i=0; i<start.num_balls; ++i){
       if (i%2==0){
         start.balls[i].pos[1]=3*size/8;

@@ -41,22 +41,22 @@ class sand_class{
     sand_class evolve(sand_class input);
 };
 
-class ball_class{
+class particle_class{
   public:
-    vector<int> pos={0,0};
+    vector<int> pos={-1,0};
     vector<int> vel={0,0};
     vector<int> col={255,0,0};
+    bool action =false;
 };
-
 
 class bounce_class{
   public:
     int num_balls;
     vector<int> mode;
-    ball_class ball;
-    vector<ball_class> initialise(int num);
-    vector<ball_class> next_frame(vector<ball_class> input);
-    vector<int> mode_func(vector<ball_class> input);
+    particle_class ball;
+    vector<particle_class> initialise(int num);
+    vector<particle_class> next_frame(vector<particle_class> input);
+    vector<int> mode_func(vector<particle_class> input);
 };
 
 class scatter_class{
@@ -71,7 +71,7 @@ class scatter_class{
 
     vector<int> pin_col;
     vector<vector<int>> pins=vector<vector<int>>(num_rows*(num_rows+1)/2,vector<int>(2,0));
-    vector<ball_class> balls;
+    vector<particle_class> balls;
     scatter_class initialise(scatter_class start);
     scatter_class evolve(scatter_class input);
 };
