@@ -13,71 +13,7 @@ using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
 /*twinkling stars?*/
 
- class rain_class{
-   public:
-    int spawn_prob=80;
-    int water_level=size-1;
-    int water_surface_ideal=8;
-    int water_surface=8;
-    vector<int> rain_col={110,150,180};
-    vector<int> water_col={0,0,14};
-    vector<int> surface_col={0,20,20};
-    int max_drops=550;
-    int counter=0;
-    int raise_level=50;
-    particle_class drop;
-   
-    vector<particle_class> rain= vector<particle_class>(max_drops,drop);
-    rain_class evolve(rain_class input);
-  };
 
-rain_class rain_class::evolve(rain_class input){
-  int start_pos;
-  
-  for (int i =0; i<input.max_drops; ++i){
-    if (input.rain[i].pos[0]==-1 && rand()%spawn_prob==0){
-      start_pos=rand()%size;
-      for(int j=0; j<input.max_drops; ++j){
-        if (input.rain[j].pos[0]>-1 &&  input.rain[j].pos[0]<4 && abs(input.rain[j].pos[1] -start_pos)<2){
-          break;
-        }
-        else if (j==input.max_drops-1){
-          input.rain[i].pos={0,start_pos};
-        } 
-      }
-    }
-  }
-  for (int i=0; i<input.max_drops;++i){
-    if (input.rain[i].pos[0] > -1 && !(input.rain[i].action) && input.rain[i].pos[0]!=input.water_level+input.water_surface){
-      ++input.rain[i].pos[0];
-    }
-    if (input.rain[i].action){
-      input.rain[i].pos={-1,0};
-      input.rain[i].action=false;
-    }
-    else if (input.rain[i].pos[0]==-1){
-      continue;
-    }
-    else if (input.rain[i].pos[0]<input.water_level){
-      continue;
-    }
-    else if (input.rain[i].pos[0]==size-1 || input.rain[i].pos[0]==input.water_level+input.water_surface){
-      input.rain[i].action =true;
-      ++input.counter;
-    }
-    else if(input.rain[i].pos[0]<input.water_level+input.water_surface && rand()%(input.water_surface-3)==0){
-      input.rain[i].action=true;
-      ++input.counter;
-    }
-  }
-  if (input.counter>input.raise_level){
-    --input.water_level;
-    input.counter=0;
-  }
-
-  return input;
-
-}
 
 int main(int argc, char * argv[]){
   srand(time(0));
@@ -98,7 +34,7 @@ int main(int argc, char * argv[]){
   scatter_class scatter;
   rain_class rain;
 
-  rain.surface_col={0,20,20};
+  rain.surface_col={0,10,20};
   rain.water_col={0,0,16};
   
   while(rain.water_level != 0){
@@ -135,30 +71,31 @@ int main(int argc, char * argv[]){
   scatter.ball_col2_2={0,180,20};
   scatter.pin_col={0,0,150};
 
-  if (rand()%2==0){
-    scatter.num_streams=1;
-  }
-  else{
-    scatter.num_streams=2;
-  }
+  for (int k=0; k<3;++k){
+    if (rand()%2==0){
+      scatter.num_streams=1;
+    }
+    else{
+      scatter.num_streams=2;
+    }
 
-  scatter=scatter.initialise(scatter);
-  
-  for (int n=0;n<scatter.num_balls*2 +size+2;++n){
-    scatter=scatter.evolve(scatter);
-    for (int i=0; i<scatter.balls.size();++i){
-      if(scatter.balls[i].pos[0]>-1){
-      canvas->SetPixel(scatter.balls[i].pos[1],scatter.balls[i].pos[0],scatter.balls[i].col[0],scatter.balls[i].col[1],scatter.balls[i].col[2]);
+    scatter=scatter.initialise(scatter);
+    
+    for (int n=0;n<scatter.num_balls*2 +size+2;++n){
+      scatter=scatter.evolve(scatter);
+      for (int i=0; i<scatter.balls.size();++i){
+        if(scatter.balls[i].pos[0]>-1){
+        canvas->SetPixel(scatter.balls[i].pos[1],scatter.balls[i].pos[0],scatter.balls[i].col[0],scatter.balls[i].col[1],scatter.balls[i].col[2]);
+        }
       }
-    }
-    for (int i=0; i<scatter.pins.size();++i){
+      for (int i=0; i<scatter.pins.size();++i){
 
-      canvas->SetPixel(scatter.pins[i][1],scatter.pins[i][0],scatter.pin_col[0],scatter.pin_col[1],scatter.pin_col[2]);
+        canvas->SetPixel(scatter.pins[i][1],scatter.pins[i][0],scatter.pin_col[0],scatter.pin_col[1],scatter.pin_col[2]);
+      }
+      usleep(100*1000);
+      canvas->Clear();
     }
-    usleep(100*1000);
-    canvas->Clear();
   }
-
   bounce.num_balls=200;
   
   vector<particle_class> balls=bounce.initialise(bounce.num_balls);
@@ -212,7 +149,7 @@ int main(int argc, char * argv[]){
          }
        }
     }
-    usleep(30*1000);
+    usleep(10*1000);
     canvas->Clear();
   }
 

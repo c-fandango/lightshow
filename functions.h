@@ -75,3 +75,20 @@ class scatter_class{
     scatter_class initialise(scatter_class start);
     scatter_class evolve(scatter_class input);
 };
+
+class rain_class{
+   public:
+    int spawn_prob=80;
+    int water_level=size-1;
+    int water_surface_ideal=8;
+    int water_surface=8;
+        int max_drops=550;
+    int counter=0;
+    int raise_level=150;
+    vector<int> rain_col={90,120,190};
+    vector<int> water_col={0,0,14};
+    vector<int> surface_col={0,20,20};
+    particle_class drop;
+    vector<particle_class> rain= vector<particle_class>(max_drops,drop);
+    rain_class evolve(rain_class input);
+  };

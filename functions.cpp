@@ -1,5 +1,6 @@
 #include "functions.h"
 #include <array>
+#include<unistd.h>
 using namespace std;
 
 
@@ -136,7 +137,7 @@ sand_class sand_class::evolve(sand_class input){
       }
     }
   }
-  
+  usleep(10*1000);
   return output;
 }
 
@@ -273,6 +274,51 @@ scatter_class scatter_class::evolve(scatter_class input){
     if (input.balls[i].pos[0]== input.num_rows*2-1){
       input.balls[i].vel[0]=0;
     }
+  }
+  return input;
+}
+
+rain_class rain_class::evolve(rain_class input){
+  int start_pos;
+  for (int i =0; i<input.max_drops; ++i){
+    if (input.rain[i].pos[0]==-1 && rand()%spawn_prob==0){
+      start_pos=rand()%size;
+      for(int j=0; j<input.max_drops; ++j){
+        if (input.rain[j].pos[0]>-1 &&  input.rain[j].pos[0]<4 && abs(input.rain[j].pos[1] -start_pos)<2){
+          break;
+        }
+        else if (j==input.max_drops-1){
+          input.rain[i].pos={0,start_pos};
+        } 
+      }
+    }
+  }
+  for (int i=0; i<input.max_drops;++i){
+    if (input.rain[i].pos[0] > -1 && !(input.rain[i].action) && input.rain[i].pos[0]!=input.water_level+input.water_surface){
+      ++input.rain[i].pos[0];
+    }
+    if (input.rain[i].action){
+      input.rain[i].pos={-1,0};
+      input.rain[i].action=false;
+    }
+    else if (input.rain[i].pos[0]==-1){
+      continue;
+    }
+    else if (input.rain[i].pos[0]<input.water_level){
+      continue;
+    }
+    else if (input.rain[i].pos[0]==size-1 || input.rain[i].pos[0]==input.water_level+input.water_surface){
+      input.rain[i].action =true;
+      ++input.counter;
+    }
+    else if(input.rain[i].pos[0]<input.water_level+input.water_surface && rand()%(input.water_surface-3)==0){
+      input.rain[i].action=true;
+      ++input.counter;
+    }
+  }
+  if (input.counter>input.raise_level){
+    --input.water_level;
+    input.counter=0;
   }
   return input;
 }
