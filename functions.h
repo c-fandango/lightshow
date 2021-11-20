@@ -4,24 +4,24 @@
 using namespace std;
 
 
-const int size=64;
+
 class conway_class{
   public:
+    int size=64;
     int frame_num;
     int col_r , col_g, col_b;
-    array<array<int,size>,size> frame= {{}};
-    array<array<int,size>,size> frame_prev= {{}};
-    array<array<int,size>,size> frame_prev_2= {{}};
-    array<array<int,size+2>,size+2> frame_bc= {{}};
-    array<array<int,size>,size> initialise(array<array<int,size>,size> input);
-
-    array<array<int,size+2>,size+2> wrapper(array<array<int,size>,size> input);
-
-    array<array<int,size>,size> next_frame(array<array<int,size+2>,size+2> input);
+    vector<vector<int>> frame= vector<vector<int>>(size,vector<int>(size,0));
+    vector<vector<int>> frame_prev= vector<vector<int>>(size,vector<int>(size,0));
+    vector<vector<int>> frame_prev_2= vector<vector<int>>(size,vector<int>(size,0));
+    vector<vector<int>> frame_bc= vector<vector<int>>(size+2,vector<int>(size+2,0));
+    vector<vector<int>> initialise(vector<vector<int>> input);
+    vector<vector<int>> wrapper(vector<vector<int>> input);
+    vector<vector<int>> next_frame(vector<vector<int>> input);
 };
 
 class ant_class{
   public:
+    int size=64;
     int frame_num, col_r, col_g,col_b;
     int xpos=size/2;  int ypos=size/2;
     int orientation=0;
@@ -33,6 +33,7 @@ class ant_class{
 
 class sand_class{
   public:
+    int size=64;  
     bool wild=true; 
     bool stable=true;
     int col_1r, col_1g,col_1b, col_2r, col_2g,col_2b, col_3r, col_3g,col_3b, col_4r, col_4g,col_4b;
@@ -51,6 +52,7 @@ class particle_class{
 
 class bounce_class{
   public:
+    int size=64;  
     int num_balls;
     vector<int> mode;
     particle_class ball;
@@ -61,6 +63,7 @@ class bounce_class{
 
 class scatter_class{
   public:
+    int size=64;  
     int num_rows=17;
     int num_balls;
     int num_streams;
@@ -78,6 +81,7 @@ class scatter_class{
 
 class rain_class{
    public:
+    int size=64;   
     int spawn_prob=80;
     int water_level=size-1;
     int water_surface_ideal=8;

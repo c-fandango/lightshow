@@ -16,15 +16,14 @@ while disconnected:
         print("No Internet")
         time.sleep(1)
 
-
-
 options=RGBMatrixOptions()
 options.rows=64
 options.cols=64
 options.hardware_mapping = 'regular'
+options.drop_privileges=True
 
+matrix=''
 
-matrix=RGBMatrix(options=options)
 
 cid='080f0dda7db742c5ba6d3fa8dd246067'
 secret= '5fc96e36afa041618def8e87956a1649'
@@ -40,8 +39,11 @@ image_url=''
 while True:
     try:
         status=sp.currently_playing()
+        #print(status)
+        status_pod=sp.currently_playing(additional_types='episode')
     except:
         status = 'bad'
+        matrix=''
         print('Poor Connection')
     if status==None:
         if image_url != '':
@@ -49,17 +51,24 @@ while True:
             matrix=''
             image_url=''
             image_url_prev=''
-            print('none')
-        time.sleep(5)
+        print('none')
+       
+        with open('/home/pi/Code/light-show/play_flag.txt','w') as file:
+            file.write('0')
+        time.sleep(4)
+        
     elif status != 'bad':
+        with open('/home/pi/Code/light-show/play_flag.txt','w') as file:
+            file.write('1')
         if matrix=='':
+            time.sleep(1)
             matrix=RGBMatrix(options=options)
-        track_type=sp.currently_playing()['currently_playing_type']
+        track_type=status['currently_playing_type']
         print(track_type)
         if track_type=='episode':
-            image_url=sp.currently_playing(additional_types='episode')['item']['images'][2]['url']
+            image_url=status_pod['item']['images'][2]['url']
         elif track_type=='track':
-            image_url=sp.currently_playing()['item']['album']['images'][2]['url']
+            image_url=status['item']['album']['images'][2]['url']
     
         if image_url != image_url_prev:
             image=requests.get(image_url).content

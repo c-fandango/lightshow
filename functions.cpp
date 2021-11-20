@@ -5,7 +5,7 @@ using namespace std;
 
 
 
-array<array<int,size>,size> conway_class::initialise(array<array<int,size>,size> input){
+vector<vector<int>> conway_class::initialise(vector<vector<int>> input){
   for(int i=0;i<size; ++i){
     for (int j=0; j<size;++j){
       input[i][j]= rand()%2;
@@ -14,8 +14,8 @@ array<array<int,size>,size> conway_class::initialise(array<array<int,size>,size>
   return input;
 }
 
-array<array<int,size+2>,size+2> conway_class::wrapper(array<array<int,size>,size> input){
-  array<array<int,size+2>,size+2> output={{}};
+vector<vector<int>> conway_class::wrapper(vector<vector<int>> input){
+  vector<vector<int>> output=vector<vector<int>>(size+2,vector<int>(size+2,0));
   for(int i=0;i<size;++i){
     for(int j=0; j<size; ++j){
       output[i+1][j+1]=input[i][j];
@@ -32,9 +32,9 @@ array<array<int,size+2>,size+2> conway_class::wrapper(array<array<int,size>,size
   return output;
 }
 
-array<array<int,size>,size> conway_class::next_frame(array<array<int,size+2>,size+2> input){
+vector<vector<int>> conway_class::next_frame(vector<vector<int>> input){
   int a=0, b=0,c=0,sum=0;
-  array<array<int,size>,size> output={{}};
+  vector<vector<int>> output=vector<vector<int>>(size,vector<int>(size,0));
   for(int i=0;i<size;++i){
     b=input[i][0]+input[i+1][0]+input[i+2][0];
     c=input[i][1]+input[i+1][1]+input[i+2][1];
