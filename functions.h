@@ -4,7 +4,6 @@
 using namespace std;
 
 
-
 class conway_class{
   public:
     int size=64;

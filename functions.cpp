@@ -3,8 +3,6 @@
 #include<unistd.h>
 using namespace std;
 
-
-
 vector<vector<int>> conway_class::initialise(vector<vector<int>> input){
   for(int i=0;i<size; ++i){
     for (int j=0; j<size;++j){
