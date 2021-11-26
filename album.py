@@ -42,6 +42,7 @@ while True:
         status = 'bad'
         matrix=''
         print('Poor Connection')
+        time.sleep(1)
     if status==None:
         if image_url != '':
             matrix.Clear()
