@@ -1,4 +1,4 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
-/home/pi/Code/light-show/album.py
+album_prod.py
 album.jpg

@@ -23,8 +23,8 @@ options.hardware_mapping = 'regular'
 
 matrix=''
 
-cid='080f0dda7db742c5ba6d3fa8dd246067'
-secret= '8624d04f5f7b47109e663d60bce3fd0d'
+cid=''
+secret= ''
 uri='https://google.co.uk'
 scope='user-read-currently-playing'
 
