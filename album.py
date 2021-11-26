@@ -41,6 +41,7 @@ while True:
     except:
         status = 'bad'
         matrix=''
+        image_url=''
         print('Poor Connection')
         time.sleep(1)
     if status==None:
