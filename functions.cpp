@@ -1,5 +1,5 @@
 #include "functions.h"
-#include <array>
+#include <cstdlib>
 #include<unistd.h>
 using namespace std;
 

@@ -1,8 +1,6 @@
 
-#include <array>
 #include <vector>
 using namespace std;
-
 
 class conway_class{
   public:
