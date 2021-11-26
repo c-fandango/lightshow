@@ -51,6 +51,7 @@ int main(int argc, char * argv[]){
   defaults.parallel = 1;
   defaults.show_refresh_rate = true;
   rgb_matrix::RuntimeOptions run_defaults;
+  run_defaults.daemon=true;
   run_defaults.drop_privileges=false;
   
   bool reset=false;
@@ -128,9 +129,9 @@ int main(int argc, char * argv[]){
       continue;
     }
 
-    sand.col_1r = 0; sand.col_1g = 0; sand.col_1b = 60; 
-    sand.col_2r = 0; sand.col_2g = 60, sand.col_2b = 40;
-    sand.col_3r = 100; sand.col_3g = 0; sand.col_3b = 130;
+    sand.col_1r = 0; sand.col_1g = 0; sand.col_1b = 80; 
+    sand.col_2r = 0; sand.col_2g = 80, sand.col_2b = 40;
+    sand.col_3r = 100; sand.col_3g = 0; sand.col_3b = 120;
     sand.col_4r = 255; sand.col_4g=0; sand.col_4b=0;
     if (rand()%3==0){
       sand.wild=false;

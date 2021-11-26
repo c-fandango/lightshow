@@ -115,7 +115,6 @@ sand_class sand_class::next_grain(sand_class input){
     if (input.frame[i][j] >3){
         input.stable=false;
     }
-   
   return input;
 }
 
@@ -130,8 +129,7 @@ sand_class sand_class::evolve(sand_class input){
         ++output.frame[i][j+1];
         ++output.frame[i-1][j];
         ++output.frame[i][j-1];
-        output.frame[i][j]=0;
-        
+        output.frame[i][j]-=4;
       }
     }
   }
