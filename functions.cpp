@@ -133,7 +133,7 @@ sand_class sand_class::evolve(sand_class input){
       }
     }
   }
-  usleep(10*1000);
+  
   return output;
 }
 

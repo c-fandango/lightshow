@@ -163,7 +163,7 @@ int main(int argc, char * argv[]){
           }
         }
       }
-      usleep(10*1000);
+      usleep(20*1000);
       canvas->Clear();
       if (play_flag=="1"){
         break;
@@ -189,7 +189,7 @@ int main(int argc, char * argv[]){
           canvas->SetPixel(i,j,bounce.mode[0],bounce.mode[1],bounce.mode[2]);
         }
       }
-      usleep(80*1000);
+      usleep(70*1000);
       canvas->Clear();
       if (play_flag=="1"){
         break;
@@ -243,6 +243,7 @@ int main(int argc, char * argv[]){
 
     rain.surface_col={0,10,20};
     rain.water_col={0,0,16};
+    rain.raise_level=250;
 
     while(rain.water_level != 0){
       rain=rain.evolve(rain);
@@ -269,7 +270,7 @@ int main(int argc, char * argv[]){
           canvas->SetPixel(rain.rain[i].pos[1],rain.rain[i].pos[0]-2,int(rain.rain_col[0]*0.2),int(rain.rain_col[1]*0.2),int(rain.rain_col[2]*0.2));
         }
       }
-      usleep(10*1000);
+      usleep(12*1000);
       canvas->Clear();
       if (play_flag=="1"){
         reset=true;
