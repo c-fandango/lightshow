@@ -60,7 +60,6 @@ while True:
         with open('/home/pi/Code/light-show/play_flag.txt','w') as file:
             file.write('1')
         if matrix=='':
-            time.sleep(1)
             matrix=RGBMatrix(options=options)
         track_type=status['currently_playing_type']
         print(track_type)
