@@ -1,7 +1,7 @@
 #include "/home/pi/Code/light-show/libs/led-matrix.h"
 #include <stdlib.h>
 #include <time.h>
-#include "functions.h"
+#include "/home/pi/Code/light-show/libs/functions.h"
 #include <unistd.h>
 #include <vector>
 #include <iostream>
@@ -131,7 +131,7 @@ int main(int argc, char * argv[]){
 
     sand.col_1r = 0; sand.col_1g = 0; sand.col_1b = 80; 
     sand.col_2r = 0; sand.col_2g = 80, sand.col_2b = 40;
-    sand.col_3r = 100; sand.col_3g = 0; sand.col_3b = 120;
+    sand.col_3r = 100; sand.col_3g = 100; sand.col_3b = 0;
     sand.col_4r = 255; sand.col_4g=0; sand.col_4b=0;
     if (rand()%3==0){
       sand.wild=false;
@@ -189,7 +189,7 @@ int main(int argc, char * argv[]){
           canvas->SetPixel(i,j,bounce.mode[0],bounce.mode[1],bounce.mode[2]);
         }
       }
-      usleep(70*1000);
+      usleep(60*1000);
       canvas->Clear();
       if (play_flag=="1"){
         break;
