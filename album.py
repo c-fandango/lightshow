@@ -20,6 +20,7 @@ options=RGBMatrixOptions()
 options.rows=64
 options.cols=64
 options.hardware_mapping = 'regular'
+options.gpio_slowdown=3
 
 matrix=''
 
