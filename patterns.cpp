@@ -51,7 +51,7 @@ int main(int argc, char * argv[]){
   defaults.parallel = 1;
   defaults.show_refresh_rate = true;
   rgb_matrix::RuntimeOptions run_defaults;
-  run_defaults.daemon=true;
+  //run_defaults.daemon=true;
   run_defaults.drop_privileges=false;
   
   bool reset=false;
@@ -106,7 +106,7 @@ int main(int argc, char * argv[]){
     ant.col_g = rand()%256;
     ant.col_b = rand()%256;
 
-    ant.frame = ant.initialise(4);
+    ant.frame = ant.initialise(2);
     
     for(int n=0;n<ant.frame_num;++n){
       ant=ant.next_frame(ant);
