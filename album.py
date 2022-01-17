@@ -55,7 +55,7 @@ while True:
        
         with open('/home/pi/Code/light-show/play_flag.txt','w') as file:
             file.write('0')
-        time.sleep(4)
+        time.sleep(2)
         
     elif status != 'bad':
         with open('/home/pi/Code/light-show/play_flag.txt','w') as file:
@@ -76,7 +76,7 @@ while True:
             image2=Image.open('/home/pi/Code/light-show/album_art.jpg')
             matrix.SetImage(image2.convert('RGB'))
         
-        time.sleep(4)
+        time.sleep(2)
         image_url_prev=image_url
 
     
