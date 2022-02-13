@@ -1,7 +1,7 @@
-#include "/home/pi/Code/light-show/libs/led-matrix.h"
+#include "./libs/led-matrix.h"
 #include <stdlib.h>
 #include <time.h>
-#include "/home/pi/Code/light-show/libs/functions.h"
+#include "./libs/functions.h"
 #include <unistd.h>
 #include <vector>
 #include <iostream>
