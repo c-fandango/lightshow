@@ -1,5 +1,6 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 album_prod.py
-album_art.jpg
+.album_art.jpg
 play_flag.txt
+.text
