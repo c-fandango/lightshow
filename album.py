@@ -29,7 +29,7 @@ secret= ''
 uri='https://google.co.uk'
 scope='user-read-currently-playing'
 
-sp=spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=cid,client_secret=secret,redirect_uri=uri, scope=scope, open_browser=False,cache_path='/home/pi/Code/light-show/text'))
+sp=spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=cid,client_secret=secret,redirect_uri=uri, scope=scope, open_browser=False,cache_path='./.text'))
 #print(sp.currently_playing())
 print('authorised')
 image_url_prev='.'
@@ -39,12 +39,14 @@ while True:
         status=sp.currently_playing()
         #print(status)
         status_pod=sp.currently_playing(additional_types='episode')
-    except:
+    except Exception as e:
         status = 'bad'
         matrix=''
         image_url=''
+        print(e)
         print('Poor Connection')
         time.sleep(1)
+
     if status==None:
         if image_url != '':
             matrix.Clear()
@@ -53,13 +55,14 @@ while True:
             image_url_prev=''
         print('none')
        
-        with open('/home/pi/Code/light-show/play_flag.txt','w') as file:
-            file.write('0')
+        with open('./play_flag.txt','w') as pipe:
+            pipe.write('0')
         time.sleep(2)
         
     elif status != 'bad':
-        with open('/home/pi/Code/light-show/play_flag.txt','w') as file:
-            file.write('1')
+        with open('./play_flag.txt','w') as pipe:
+            pipe.write('1')
+        time.sleep(1)
         if matrix=='':
             matrix=RGBMatrix(options=options)
         track_type=status['currently_playing_type']
@@ -71,9 +74,9 @@ while True:
     
         if image_url != image_url_prev:
             image=requests.get(image_url).content
-            with open('/home/pi/Code/light-show/album_art.jpg','wb') as file:
+            with open('./.album_art.jpg','wb') as file:
                 file.write(image)
-            image2=Image.open('/home/pi/Code/light-show/album_art.jpg')
+            image2=Image.open('./.album_art.jpg')
             matrix.SetImage(image2.convert('RGB'))
         
         time.sleep(2)
