@@ -41,7 +41,7 @@ int main(int argc, char * argv[]){
   cout<<"initialising..."<<flush;	
   srand(time(0));
   
-  std::thread thread_obj(trd,"/home/pi/Code/light-show/play_flag.txt");
+  std::thread thread_obj(trd,"./play_flag.txt");
   RGBMatrix::Options defaults;
   defaults.hardware_mapping = "regular";
   defaults.rows = 64;
