@@ -318,3 +318,65 @@ rain_class rain_class::evolve(rain_class input){
   }
   return input;
 }
+vector<particle_class> star_class::initialise(int num, int size){
+    particle_class initial_star;
+    vector<particle_class> output= vector<particle_class>(num,initial_star);
+    int i=0;
+    int col;
+    vector<int> pos = vector<int>(2,0); 
+    while (i<num-1){
+        pos[0] =rand()%size;
+        pos[1] =rand()%size;
+	for (int j=i+1; j<num; ++j){
+	    if (abs(output[j].pos[0] - pos[0]) < 2 && abs(output[j].pos[1] - pos[1]) <2){
+	        break;
+	    }
+	    else if (j==num-1){
+	        output[i].pos=pos;
+		output[i].vel[0] = -1 + 2*rand()%2;
+		col = rand()%256;
+		output[i].col[0] = col;
+		output[i].col[1] = col;
+		output[i].col[2] = col;
+		++i;
+	    }
+	}
+    }
+    return output;
+}
+
+vector<particle_class> star_class::evolve(int size, int num, vector<particle_class> output){
+    int col;
+    int xpos, ypos;   
+    for (int i=0; i<num; ++i){
+        if (rand()%3000==0){
+	    col = rand()%256;
+            output[i].col[0] = col;
+	    output[i].col[1] = col;	
+            output[i].col[2] = col;
+	    for (int j=0; j<num; ++j){
+		xpos = rand()%size;
+		ypos = rand()%size;
+	        if (abs(output[j].pos[0] - xpos) < 2 && abs(output[j].pos[1] - ypos) < 2){
+	            break;
+	        }
+	        else if (j==num-1){
+	            output[i].pos[0] = xpos;
+		    output[i].pos[1] = ypos;
+		    output[i].vel[0] = -1 + 2*rand()%2;
+		    col = rand()%256;
+		    output[i].col[0] = col;
+		    output[i].col[1] = col;
+		    output[i].col[2] = col;
+		}
+	    }
+        }
+	if (output[i].col[0] ==0 || output[i].col[0] == 255){
+            output[i].vel[0] *= -1;
+	}
+	output[i].col[0] += output[i].vel[0];
+        output[i].col[1] += output[i].vel[0];
+	output[i].col[2] += output[i].vel[0];
+    }
+    return output;
+}

@@ -83,7 +83,7 @@ class rain_class{
     int water_level=size-1;
     int water_surface_ideal=8;
     int water_surface=8;
-        int max_drops=550;
+    int max_drops=550;
     int counter=0;
     int raise_level=150;
     vector<int> rain_col={90,120,190};
@@ -93,3 +93,11 @@ class rain_class{
     vector<particle_class> rain= vector<particle_class>(max_drops,drop);
     rain_class evolve(rain_class input);
   };
+
+class star_class{
+    public:
+        int size=64;
+        int num;
+	vector<particle_class> initialise( int num, int size);
+	vector<particle_class> evolve(int size, int num, vector<particle_class>);
+};

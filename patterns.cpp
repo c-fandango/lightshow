@@ -13,7 +13,6 @@ using namespace rgb_matrix;
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
 string play_flag="1";
-/*twinkling stars?*/
 
 string read_file(string path){
   string line, flag;
@@ -22,7 +21,6 @@ string read_file(string path){
     while (getline(file,line))
     {
       flag=line;
-      //cout<<flag<<'\n';
     }
     file.close();
   }
@@ -70,6 +68,7 @@ int main(int argc, char * argv[]){
     bounce_class bounce;
     scatter_class scatter;
     rain_class rain;
+    star_class star;
 
     con.frame_num=3000;
     con.col_r = rand()%256, con.col_g = rand()%256, con.col_b=rand()%256;
@@ -284,7 +283,29 @@ int main(int argc, char * argv[]){
         reset=true;
         break;
       }
+    }    
+    if(reset){
+      cout<<"spotify flag is detected, killing patterns"<<flush;	    
+      delete canvas;
+      continue;
     }
+
+    star.num = 50;
+    star.size = 64;
+    vector<particle_class> frame = star.initialise(star.num,star.size);
+    for (int n=0; n<10000; n++){
+        frame = star.evolve(star.size, star.num, frame);
+        for (int i=0; i<star.num; ++i){
+        canvas-> SetPixel(frame[i].pos[0], frame[i].pos[1], frame[i].col[0], frame[i].col[1], frame[i].col[2]);
+        }
+        usleep(10*1000);
+        canvas->Clear();	
+        if (play_flag=="1"){
+          cout<<"spotify flag is detected, killing patterns"<<flush;	    
+          reset=true;
+          break;
+        }
+      }
 
     delete canvas;
     cout<<"end of patterns, restarting"<<flush;
