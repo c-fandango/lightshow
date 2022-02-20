@@ -22,7 +22,7 @@ string read_file(string path){
     while (getline(file,line))
     {
       flag=line;
-      cout<<flag<<'\n';
+      //cout<<flag<<'\n';
     }
     file.close();
   }
@@ -40,6 +40,7 @@ void trd(string path){
 }
 
 int main(int argc, char * argv[]){
+  cout<<"initialising..."<<flush;	
   srand(time(0));
   
   std::thread thread_obj(trd,"/home/pi/Code/light-show/play_flag.txt");
@@ -49,9 +50,9 @@ int main(int argc, char * argv[]){
   defaults.cols=64;
   defaults.chain_length = 1;
   defaults.parallel = 1;
-  defaults.show_refresh_rate = true;
+  defaults.show_refresh_rate = false;
   rgb_matrix::RuntimeOptions run_defaults;
-  //run_defaults.daemon=true;
+  run_defaults.daemon=false;
   run_defaults.drop_privileges=false;
   
   bool reset=false;
@@ -73,7 +74,7 @@ int main(int argc, char * argv[]){
     con.frame_num=3000;
     con.col_r = rand()%256, con.col_g = rand()%256, con.col_b=rand()%256;
     con.frame_bc=con.wrapper(con.initialise(con.frame));
-
+    cout<<"starting conway"<<flush;
     for(int n=0;n<con.frame_num;++n){
       con.frame=con.next_frame(con.frame_bc);
       for (int i=0;i<con.size;++i){
@@ -97,10 +98,11 @@ int main(int argc, char * argv[]){
       }
     }
     if(reset){
+      cout<<"spotify flag is detected, killing patterns"<<flush;	    
       delete canvas;
       continue;
     }
-
+    cout<<"starting ant pattern"<<flush;
     ant.frame_num=4000;
     ant.col_r = rand()%256;
     ant.col_g = rand()%256;
@@ -125,10 +127,11 @@ int main(int argc, char * argv[]){
       }
     }
     if(reset){
+      cout<<"spotify flag is detected, killing patterns"<<flush;	    
       delete canvas;
       continue;
     }
-
+    cout<<"starting and pattern"<<flush;
     sand.col_1r = 0; sand.col_1g = 0; sand.col_1b = 80; 
     sand.col_2r = 0; sand.col_2g = 80, sand.col_2b = 40;
     sand.col_3r = 100; sand.col_3g = 100; sand.col_3b = 0;
@@ -170,12 +173,12 @@ int main(int argc, char * argv[]){
       }
     }
     if(reset){
+      cout<<"spotify flag is detected, killing patterns"<<flush;	    
       delete canvas;
       continue;
     }
-
+    cout<<"starting ball pattern"<<flush;
     bounce.num_balls=200;
-    
     vector<particle_class> balls=bounce.initialise(bounce.num_balls);
     
     for(int i=0;i<4000;i++){
@@ -196,9 +199,12 @@ int main(int argc, char * argv[]){
       }
     }
     if(reset){
+      cout<<"spotify flag is detected, killing patterns"<<flush;	    
       delete canvas;
       continue;
     }
+
+    cout<<"starting scatter pattern"<<flush;
     scatter.ball_col1={255,0,0};
     scatter.ball_col2_1={0,130,100};
     scatter.ball_col2_2={0,180,20};
@@ -237,10 +243,11 @@ int main(int argc, char * argv[]){
       }
     }
     if(reset){
+      cout<<"spotify flag is detected, killing patterns"<<flush;	    
       delete canvas;
       continue;
     }
-
+    cout<<"starting rain pattern"<<flush;
     rain.surface_col={0,10,20};
     rain.water_col={0,0,16};
     rain.raise_level=250;
@@ -273,12 +280,14 @@ int main(int argc, char * argv[]){
       usleep(12*1000);
       canvas->Clear();
       if (play_flag=="1"){
+        cout<<"spotify flag is detected, killing patterns"<<flush;	    
         reset=true;
         break;
       }
     }
 
     delete canvas;
+    cout<<"end of patterns, restarting"<<flush;
   }
   return 0;
 }
