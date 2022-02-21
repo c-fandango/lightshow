@@ -52,7 +52,7 @@ int main(int argc, char * argv[]){
   rgb_matrix::RuntimeOptions run_defaults;
   run_defaults.daemon=false;
   run_defaults.drop_privileges=false;
-  
+  defaults.limit_refresh_rate_hz =75;  
   bool reset=false;
 
   while(true){
@@ -290,10 +290,10 @@ int main(int argc, char * argv[]){
       continue;
     }
 
-    star.num = 50;
+    star.num = 100;
     star.size = 64;
     vector<particle_class> frame = star.initialise(star.num,star.size);
-    for (int n=0; n<10000; n++){
+    for (int n=0; n<20000; n++){
         frame = star.evolve(star.size, star.num, frame);
         for (int i=0; i<star.num; ++i){
         canvas-> SetPixel(frame[i].pos[0], frame[i].pos[1], frame[i].col[0], frame[i].col[1], frame[i].col[2]);
