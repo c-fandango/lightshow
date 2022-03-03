@@ -76,6 +76,7 @@ while True:
             image=requests.get(image_url).content
             with open('./.album_art.jpg','wb') as file:
                 file.write(image)
+            print('changing image')
             image2=Image.open('./.album_art.jpg')
             matrix.SetImage(image2.convert('RGB'))
         
