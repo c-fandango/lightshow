@@ -5,3 +5,4 @@ album_prod.py
 play_flag.txt
 .text
 patterns
+*.o
