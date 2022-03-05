@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://gnu.org/licenses/gpl-2.0.txt>
 
-#include "led-matrix.h"
+#include "../include/led-matrix.h"
 
 #include <assert.h>
 #include <grp.h>
@@ -29,10 +29,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "gpio.h"
-#include "thread.h"
-#include "framebuffer-internal.h"
-#include "multiplex-mappers-internal.h"
+#include "../include/gpio.h"
+#include "../include/thread.h"
+#include "../include/framebuffer-internal.h"
+#include "../include/multiplex-mappers-internal.h"
 
 // Leave this in here for a while. Setting things from old defines.
 #if defined(ADAFRUIT_RGBMATRIX_HAT)

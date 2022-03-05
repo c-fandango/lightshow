@@ -17,7 +17,7 @@
 /*
  * We do this in plain C so that we can use designated initializers.
  */
-#include "hardware-mapping.h"
+#include "../include/hardware-mapping.h"
 
 #define GPIO_BIT(b) ((uint64_t)1<<(b))
 
@@ -285,3 +285,4 @@ struct HardwareMapping matrix_hardware_mappings[] = {
 
   {0}
 };
+

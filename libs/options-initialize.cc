@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://gnu.org/licenses/gpl-2.0.txt>
 
-#include "led-matrix.h"
+#include "../include/led-matrix.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,10 +25,10 @@
 
 #include <vector>
 
-#include "multiplex-mappers-internal.h"
-#include "framebuffer-internal.h"
+#include "../include/multiplex-mappers-internal.h"
+#include "../include/framebuffer-internal.h"
 
-#include "gpio.h"
+#include "../include/gpio.h"
 
 namespace rgb_matrix {
 RuntimeOptions::RuntimeOptions() :

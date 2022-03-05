@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://gnu.org/licenses/gpl-2.0.txt>
 
-#include "multiplex-mappers-internal.h"
+#include "../include/multiplex-mappers-internal.h"
 
 namespace rgb_matrix {
 namespace internal {
