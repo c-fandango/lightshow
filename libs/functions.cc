@@ -31,7 +31,6 @@ void virtual_frame_class::wild(bool input) {
     }
 }
 
-
 void conway_class::wrapper() {
     for(int i=0; i<size; ++i) {
         for(int j=0; j<size; ++j) {
@@ -62,7 +61,6 @@ void conway_class::initialise() {
         wild = true;
     }
 }
-
 
 void conway_class::next_frame() {
     frame_prev_2=frame_prev;
@@ -356,17 +354,15 @@ void star_class::initialise() {
     int i=0;
     while (i<num-1) {
         pos = {rand()%size,rand()%size};
-        for (int j=i+1; j<num; ++j) {
-            if (abs(stars[j].pos[0] - pos[0]) < 2 && abs(stars[j].pos[1] - pos[1]) <2) {
+        for (int j=0; j<num; ++j) {
+            if (stars[j].pos[0] == pos[0] < 2 && stars[j].pos[1] == pos[1]) {
                 break;
             }
             else if (j==num-1) {
                 stars[i].pos=pos;
                 stars[i].vel[0] = -1 + 2*rand()%2;
-                col = rand()%256;
-                stars[i].col[0] = col;
-                stars[i].col[1] = col;
-                stars[i].col[2] = col;
+                col = 1 + rand()%max_brightness;
+                stars[i].col = {col,col,col};
                 ++i;
             }
         }
@@ -374,24 +370,27 @@ void star_class::initialise() {
 }
 
 void star_class::evolve() {
+    bool loop = true;
     for (int i=0; i<num; ++i) {
         if (stars[i].col[0] == 0 && rand()%decay_prob == 0) {
-            col = rand()%40;
+            col = 1 + rand()%30;
             stars[i].col = {col,col,col};
-            for (int j=0; j<num; ++j) {
+            while(loop) {
                 pos = {rand()%size,rand()%size};
-                if (abs(stars[j].pos[0] - pos[0]) < 2 && abs(stars[j].pos[1] - pos[1]) < 2) {
-                    break;
-                }
-                else if (j==num-1) {
-                    stars[i].pos = pos;
-                    stars[i].vel[0] = -1 + 2*rand()%2;
-                    col = rand()%256;
-                    stars[i].col = {col,col,col};
+                for (int j=0; j<num; ++j) {
+                    if (stars[j].pos[0] == pos[0] && stars[j].pos[1] == pos[1]) {
+                        break;
+                    }
+                    else if (j==num-1) {
+                        loop = false;
+                        stars[i].pos = pos;
+                        stars[i].vel[0] = -1 + 2*rand()%2;
+                        col = 1 + rand()%max_brightness;
+                    }
                 }
             }
         }
-        if (stars[i].col[0] ==0 || stars[i].col[0] == 255) {
+        if (stars[i].col[0] ==0 || stars[i].col[0] == max_brightness) {
             stars[i].vel[0] *= -1;
         }
         stars[i].col[0] += stars[i].vel[0];
