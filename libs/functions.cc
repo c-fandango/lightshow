@@ -1,4 +1,4 @@
-#include "functions.h"
+#include "../include/functions.h"
 #include <cstdlib>
 #include<unistd.h>
 using namespace std;
