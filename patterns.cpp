@@ -78,24 +78,24 @@ int main(int argc, char * argv[]) {
         cout<<"starting conway"<<endl;
         con.frame_num=3000;
         con.col = {rand()%256, rand()%256, rand()%256};
-	con.initialise();
+        con.initialise();
         for(int n=0; n<con.frame_num; ++n) {
             con.next_frame();
             for (int i=0; i<con.size; ++i) {
                 for(int j=0; j<con.size; ++j) {
                     if(con.frame[i][j]==1) {
-			    vframe.frame[i][j]=con.col;
+                        vframe.frame[i][j]=con.col;
                     }
                 }
             }
-	    vframe.wild(con.wild);
+            vframe.wild(con.wild);
             for (int i=0; i< vframe.size; ++i) {
                 for (int j=0; j<vframe.size; ++j) {
                     canvas->SetPixel(i,j, vframe.frame[i][j][0], vframe.frame[i][j][1], vframe.frame[i][j][2]);
                 }
             }
             usleep(110*1000);
-	    vframe.clear();
+            vframe.clear();
             if(con.stable) {
                 break;
             }
@@ -111,9 +111,9 @@ int main(int argc, char * argv[]) {
         }
         cout<<"starting ant pattern"<<endl;
         ant.frame_num=4000;
-	ant.start_num=2;
+        ant.start_num=2;
         ant.trail_col = {rand()%256,rand()%256,rand()%256};
-	ant.col = {255,255,255};
+        ant.col = {255,255,255};
         ant.initialise();
 
         for(int n=0; n<ant.frame_num; ++n) {
@@ -125,7 +125,7 @@ int main(int argc, char * argv[]) {
                     }
                 }
             }
-	    vframe.frame[ant.ypos][ant.xpos] = ant.col;
+            vframe.frame[ant.ypos][ant.xpos] = ant.col;
             for (int i=0; i< vframe.size; ++i) {
                 for (int j=0; j<vframe.size; ++j) {
                     canvas->SetPixel(i,j, vframe.frame[i][j][0], vframe.frame[i][j][1], vframe.frame[i][j][2]);
@@ -133,7 +133,7 @@ int main(int argc, char * argv[]) {
             }
 
             usleep(40*1000);
-	    vframe.clear();
+            vframe.clear();
             if (play_flag=="1") {
                 break;
             }
@@ -205,7 +205,7 @@ int main(int argc, char * argv[]) {
             bounce.evolve();
             bounce.mode_func();
             vframe.create(bounce.balls);
-           for (int i=bounce.size-4; i<bounce.size; ++i) {
+            for (int i=bounce.size-4; i<bounce.size; ++i) {
                 for (int j=bounce.size-4; j<bounce.size; ++j) {
                     vframe.frame[i][j] = bounce.mode;
                 }
@@ -290,17 +290,17 @@ int main(int argc, char * argv[]) {
                 }
             }
             for (int i=0; i<rain.max_drops; ++i) {
-              if(rain.rain[i].action) {
-		    cout<<"xpos: "<< rain.rain[i].pos[0]<<" ypos: "<< rain.rain[i].pos[1] << " r_col: "<< rain.rain[i].col[0]<<endl;  
+                if(rain.rain[i].action) {
+                    cout<<"xpos: "<< rain.rain[i].pos[0]<<" ypos: "<< rain.rain[i].pos[1] << " r_col: "<< rain.rain[i].col[0]<<endl;
                     vframe.frame[rain.rain[i].pos[1]-1][rain.rain[i].pos[0]-1] = rain.rain[i].col;
                     vframe.frame[rain.rain[i].pos[1]-1][rain.rain[i].pos[0]+1] = rain.rain[i].col;
                     vframe.frame[rain.rain[i].pos[1]+1][rain.rain[i].pos[0]-1] = rain.rain[i].col;
                     vframe.frame[rain.rain[i].pos[1]+1][rain.rain[i].pos[0]+1] = rain.rain[i].col;
                 }
                 else if(rain.rain[i].pos[0]>-1) {
-                  vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]] = rain.rain[i].col;
-                   vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]-1] = {int(rain.rain[i].col[0]*0.5),int(rain.rain[i].col[1]*0.5),int(rain.rain[i].col[2]*0.5)};
-                   vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]-1] = {int(rain.rain[i].col[0]*0.2),int(rain.rain[i].col[1]*0.2),int(rain.rain[i].col[2]*0.2)};
+                    vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]] = rain.rain[i].col;
+                    vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]-1] = {int(rain.rain[i].col[0]*0.5),int(rain.rain[i].col[1]*0.5),int(rain.rain[i].col[2]*0.5)};
+                    vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]-1] = {int(rain.rain[i].col[0]*0.2),int(rain.rain[i].col[1]*0.2),int(rain.rain[i].col[2]*0.2)};
                 }
             }
 
@@ -322,8 +322,9 @@ int main(int argc, char * argv[]) {
             delete canvas;
             continue;
         }
-	canvas->Clear();
+        canvas->Clear();
         star.decay_prob = 15;
+        star.max_brightness = 180;
         star.num = 150;
         star.size = 64;
         star.initialise();
