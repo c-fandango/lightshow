@@ -1,7 +1,7 @@
-#include "./libs/led-matrix.h"
+#include "../include/led-matrix.h"
 #include <stdlib.h>
 #include <time.h>
-#include "./libs/functions.h"
+#include "../include/functions.h"
 #include <unistd.h>
 #include <vector>
 #include <iostream>
@@ -323,7 +323,7 @@ int main(int argc, char * argv[]) {
             continue;
         }
 	canvas->Clear();
-        star.decay_prob = 20;
+        star.decay_prob = 15;
         star.num = 150;
         star.size = 64;
         star.initialise();
