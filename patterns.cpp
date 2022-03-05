@@ -12,6 +12,7 @@ using namespace std;
 using namespace rgb_matrix;
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
+
 string play_flag="1";
 
 string read_file(string path) {
@@ -36,7 +37,6 @@ void trd(string path) {
         usleep(100*1000);
     }
 }
-
 
 int main(int argc, char * argv[]) {
     cout<<"initialising..."<<endl;

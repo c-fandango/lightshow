@@ -130,6 +130,7 @@ public:
     int max_brightness;
     int size=64;
     int num;
+    int twinkle_prob =1000;
     int decay_prob = 2000;
     vector<particle_class> stars;
     void initialise();

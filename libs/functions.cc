@@ -361,7 +361,7 @@ void star_class::initialise() {
             else if (j==num-1) {
                 stars[i].pos=pos;
                 stars[i].vel[0] = -1 + 2*rand()%2;
-                col = 1 + rand()%max_brightness;
+                col = 1 + rand()%(max_brightness-1);
                 stars[i].col = {col,col,col};
                 ++i;
             }
@@ -385,12 +385,12 @@ void star_class::evolve() {
                         loop = false;
                         stars[i].pos = pos;
                         stars[i].vel[0] = -1 + 2*rand()%2;
-                        col = 1 + rand()%max_brightness;
+                        col = 1 + rand()%(max_brightness-1);
                     }
                 }
             }
         }
-        if (stars[i].col[0] ==0 || stars[i].col[0] == max_brightness) {
+        if (stars[i].col[0] == 0 || stars[i].col[0] == max_brightness ||  rand()%twinkle_prob == 0) {
             stars[i].vel[0] *= -1;
         }
         stars[i].col[0] += stars[i].vel[0];
