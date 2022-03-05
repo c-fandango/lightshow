@@ -127,6 +127,7 @@ private:
     vector<int> pos = {0,0};
     particle_class initial_star;
 public:
+    int max_brightness;
     int size=64;
     int num;
     int decay_prob = 2000;
