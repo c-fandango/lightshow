@@ -292,7 +292,6 @@ int main(int argc, char * argv[]) {
             }
             for (int i=0; i<rain.max_drops; ++i) {
                 if(rain.rain[i].action) {
-                    cout<<"xpos: "<< rain.rain[i].pos[0]<<" ypos: "<< rain.rain[i].pos[1] << " r_col: "<< rain.rain[i].col[0]<<endl;
                     vframe.frame[rain.rain[i].pos[1]-1][rain.rain[i].pos[0]-1] = rain.rain[i].col;
                     vframe.frame[rain.rain[i].pos[1]-1][rain.rain[i].pos[0]+1] = rain.rain[i].col;
                     vframe.frame[rain.rain[i].pos[1]+1][rain.rain[i].pos[0]-1] = rain.rain[i].col;
@@ -324,7 +323,7 @@ int main(int argc, char * argv[]) {
             continue;
         }
         canvas->Clear();
-        star.decay_prob = 9;
+        star.decay_prob = 10;
         star.max_brightness = 180;
         star.num = 160;
         star.size = 64;
