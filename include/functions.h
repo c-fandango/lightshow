@@ -128,8 +128,9 @@ private:
     particle_class initial_star;
 public:
     int max_brightness;
+    int frame_num=40000;
     int size=64;
-    int num;
+    int num=200;
     int twinkle_prob =1000;
     int decay_prob = 2000;
     vector<particle_class> stars;

@@ -232,6 +232,7 @@ int main(int argc, char * argv[]) {
         cout<<"starting scatter pattern"<<endl;
         scatter.ball_col1= {255,0,0};
         scatter.ball_col2_1= {0,130,100};
+        scatter.ball_col2_1= {120,190,21};
         scatter.ball_col2_2= {0,180,20};
         scatter.pin_col= {0,0,150};
 
@@ -323,12 +324,13 @@ int main(int argc, char * argv[]) {
             continue;
         }
         canvas->Clear();
-        star.decay_prob = 15;
+        star.decay_prob = 9;
         star.max_brightness = 180;
-        star.num = 150;
+        star.num = 160;
         star.size = 64;
+	star.frame_num=40000;
         star.initialise();
-        for (int n=0; n<40000; n++) {
+        for (int n=0; n<star.frame_num; n++) {
             star.evolve();
             for (int i=0; i<star.num; ++i) {
                 canvas-> SetPixel(star.stars[i].pos[0], star.stars[i].pos[1], star.stars[i].col[0], star.stars[i].col[1], star.stars[i].col[2]);
