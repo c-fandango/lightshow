@@ -1,0 +1,21 @@
+#!/bin/bash
+
+pip3 install spotipy
+
+git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
+
+cd ./rpi-rgb-led-matrix 
+
+make
+
+cd ./bindings/python
+
+make
+
+cd ..
+cd ..
+cd ..
+
+sudo rm -r ./rpi-rgb-led-matrix
+
+make
