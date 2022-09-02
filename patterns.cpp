@@ -334,7 +334,7 @@ int main(int argc, char * argv[]) {
             for (int i=0; i<star.num; ++i) {
                 canvas-> SetPixel(star.stars[i].pos[0], star.stars[i].pos[1], star.stars[i].col[0], star.stars[i].col[1], star.stars[i].col[2]);
             }
-            usleep(10*1000);
+            usleep(15*1000);
             if (play_flag=="1") {
                 cout<<"spotify flag is detected, killing patterns"<<endl;
                 reset=true;
