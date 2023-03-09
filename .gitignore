@@ -1,3 +1,4 @@
 etc
+var
 patterns
 *.o
