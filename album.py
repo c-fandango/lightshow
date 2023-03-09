@@ -57,49 +57,40 @@ sp = init_spotify(**config['spotify'])
 
 image_url_prev='.'
 image_url=''
-while True:
-    try:
-        status=sp.currently_playing()
-        #print(status)
-        status_pod=sp.currently_playing(additional_types='episode')
-    except Exception as e:
-        status = 'bad'
-        matrix=''
-        image_url=''
-        print(e)
-        print('Poor Connection')
-        time.sleep(1)
 
-    if status==None:
-        if image_url != '':
+while True:
+    time.sleep(config['polling_interval_seconds'])
+    try:
+        playing_now = sp.currently_playing(additional_types='episode')
+    except Exception:
+        logging.exception('Poor Connection')
+        continue
+
+    if not playing_now:
+        if image_url:
             matrix.Clear()
-            matrix=''
             image_url=''
             image_url_prev=''
-        print('none')
+        logging.info('nothing playing')
        
         with open('./play_flag.txt','w') as pipe:
             pipe.write('0')
-        time.sleep(2)
         
-    elif status != 'bad':
+    else:
         with open('./play_flag.txt','w') as pipe:
             pipe.write('1')
-        time.sleep(1)
-        track_type=status['currently_playing_type']
-        print(track_type)
-        if track_type=='episode':
-            image_url=status_pod['item']['images'][2]['url']
-        elif track_type=='track':
-            image_url=status['item']['album']['images'][2]['url']
+
+        item = playing_now['item']
+        image_url = item.get('album', item)['images'][2]['url']
     
         if image_url != image_url_prev:
-            image=requests.get(image_url).content
+
+            image = requests.get(image_url).content
             with open('./.album_art.jpg','wb') as file:
                 file.write(image)
-            print('changing image')
+
+            logging.info('changing image')
             image2=Image.open('./.album_art.jpg')
             matrix.SetImage(image2.convert('RGB'))
         
-        time.sleep(2)
         image_url_prev=image_url
