@@ -1,37 +1,60 @@
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
-import spotipy
-from spotipy.oauth2 import  SpotifyOAuth
-import requests
 import time
+import yaml
+import logging
+import spotipy
+import argparse
+import requests
 from PIL import Image
+from spotipy.oauth2 import SpotifyOAuth
+from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
-disconnected=True
+def load_config(path):
+    with open(path, 'r') as file:
+        return yaml.safe_load(file) 
 
-while disconnected:
-    try:
-        request=requests.get("https://www.google.co.uk/",timeout=5)
-        print("Connected To Internet")
-        disconnected=False
-    except (requests.ConnectionError,requests.Timeout) as exception:
-        print("No Internet")
-        time.sleep(1)
+def wait_for_connection(url):
+    while True:
+        try:
+            return requests.get(url,timeout=5)
+        except (requests.ConnectionError,requests.Timeout) as exception:
+            logging.exception('Failed to establish internet connection')
+            time.sleep(1)
 
-options=RGBMatrixOptions()
-options.rows=64
-options.cols=64
-options.hardware_mapping = 'regular'
-options.gpio_slowdown=3
+def init_display(size, gpio_slowdown):
+    options = RGBMatrixOptions()
+    options.rows = size 
+    options.cols = size 
+    options.gpio_slowdown = gpio_slowdown
+    options.hardware_mapping = 'regular'
 
-matrix=''
+    return RGBMatrix(options=options)
 
-cid=''
-secret= ''
-uri='https://google.co.uk'
-scope='user-read-currently-playing'
+def init_spotify(access_id, secret, redirect_uri, scope, cache):
+    auth_manager = SpotifyOAuth(
+        client_id=access_id,
+        client_secret = secret,
+        redirect_uri = redirect_uri,
+        scope = scope,
+        open_browser = False,
+        cache_path = cache
+    )
+    return spotipy.Spotify(auth_manager=auth_manager)
 
-sp=spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=cid,client_secret=secret,redirect_uri=uri, scope=scope, open_browser=False,cache_path='./.text'))
-#print(sp.currently_playing())
-print('authorised')
+parser = argparse.ArgumentParser(description='displays image of currently playing spotify song')
+parser.add_argument('config_path')
+args = parser.parse_args()
+
+config = load_config(args.config_path)
+
+logging.basicConfig(filename=config['log_file'], format='%(asctime)s - %(message)s', level=logging.INFO)
+
+
+wait_for_connection(config['test_connection_url'])
+
+matrix = init_display(**config['display'])
+
+sp = init_spotify(**config['spotify'])
+
 image_url_prev='.'
 image_url=''
 while True:
@@ -63,8 +86,6 @@ while True:
         with open('./play_flag.txt','w') as pipe:
             pipe.write('1')
         time.sleep(1)
-        if matrix=='':
-            matrix=RGBMatrix(options=options)
         track_type=status['currently_playing_type']
         print(track_type)
         if track_type=='episode':
@@ -82,7 +103,3 @@ while True:
         
         time.sleep(2)
         image_url_prev=image_url
-
-    
-
-
