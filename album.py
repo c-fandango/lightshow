@@ -40,7 +40,7 @@ def init_spotify(access_id, secret, redirect_uri, scope, cache):
     return spotipy.Spotify(auth_manager=auth_manager)
 
 def write_flag(value, flag_path):
-    with open(flag_path,'w+') as file:
+    with open(flag_path,'wb+') as file:
         file.write(value)
 
 def run(sp, display_options, poll_interval_seconds, flag_path):
@@ -61,10 +61,10 @@ def run(sp, display_options, poll_interval_seconds, flag_path):
                 image_url_prev, matrix = None, None
             logging.info('nothing playing')
            
-            write_flag('0', flag_path)
+            write_flag(b'0', flag_path)
             
         else:
-            write_flag('1', flag_path)
+            write_flag(b'1', flag_path)
     
             item = playing_now['item']
             image_url = item.get('album', item)['images'][2]['url']
