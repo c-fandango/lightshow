@@ -18,16 +18,18 @@ string play_flag="1";
 string read_file(string path) {
     string line, flag;
     ifstream file(path);
-    if (file.is_open()) {
+    cout<<file.good()<<endl;
+    if (file.good() && file.is_open()) {
         while (getline(file,line))
         {
             flag=line;
         }
-        file.close();
     }
     else {
-        cout<< "can't open file";
+	flag="0";
+        cout<< "file does not exist or failed to open file";
     }
+    file.close();
     return flag;
 }
 void trd(string path) {
@@ -39,10 +41,11 @@ void trd(string path) {
 }
 
 int main(int argc, char * argv[]) {
+    cout<<argc<<endl;
     cout<<"initialising..."<<endl;
     srand(time(0));
 
-    std::thread thread_obj(trd,"./.play_flag.txt");
+    std::thread thread_obj(trd,"var/play_flag");
     RGBMatrix::Options defaults;
     defaults.hardware_mapping = "regular";
     defaults.rows = 64;
