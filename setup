@@ -21,6 +21,3 @@ cd ../../../
 rm -r ./rpi-rgb-led-matrix
 
 make
-
-chmod 777 ./patterns ./.text ./.play_flag.txt ./.album_art.jpg
-chmod +x ./album_prod.py
