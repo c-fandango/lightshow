@@ -26,7 +26,6 @@ def init_options(size, gpio_slowdown):
     options.cols = size 
     options.gpio_slowdown = gpio_slowdown
     options.hardware_mapping = 'regular'
-
     return options
 
 def init_spotify(access_id, secret, redirect_uri, scope, cache):
@@ -41,7 +40,7 @@ def init_spotify(access_id, secret, redirect_uri, scope, cache):
     return spotipy.Spotify(auth_manager=auth_manager)
 
 def write_flag(value, flag_path):
-    with open(flag_path,'w') as file:
+    with open(flag_path,'w+') as file:
         file.write(value)
 
 def run(sp, display_options, poll_interval_seconds, flag_path):
