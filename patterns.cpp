@@ -1,14 +1,15 @@
 #include "../include/led-matrix.h"
 #include "../include/functions.h"
 #include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <vector>
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <thread>
 #include <string>
 using namespace std;
+using namespace std::chrono;
 using namespace rgb_matrix;
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
@@ -20,16 +21,237 @@ int read_file(string path) {
     ifstream file(path);
     if (file.good() && file.is_open()) {
 	file >> flag;
-	return flag;
+	if (flag == 1){
+	    return flag;
+	}
     }
     return 0;
 }
+void usleep(int interval) {
+    this_thread::sleep_for(milliseconds(interval));
+}
 
-void trd(string path) {
+void trd(string path, int interval) {
     while (true) {
         PLAY_FLAG = read_file(path);
-        usleep(100*1000);
+        usleep(interval);
     }
+}
+
+bool run_conway(Conway con, Canvas * canvas, int interval) {
+    int sum_time =0;
+    int sum_time2 =0;
+    for(int n=0; n<con.frame_num; ++n) {
+	auto start = high_resolution_clock::now();
+        con.evolve();
+	auto start2 = high_resolution_clock::now();
+        for (int i=0; i<con.size; ++i) {
+            for (int j=0; j<con.size; ++j) {
+		if (con.frame.sframe[i][j]) {
+                    canvas -> SetPixel(i, j, con.global_col[0], con.global_col[1], con.global_col[2]);
+		}
+		else {
+                    canvas -> SetPixel(i, j, 0, 0, 0); 
+		}
+            }
+        }
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start);
+	auto duration2 = duration_cast<microseconds>(stop - start2);
+	sum_time += duration.count();
+	sum_time2 += duration2.count();
+
+        usleep(interval);
+	if (con.stable){
+            cout<< sum_time/n<<endl;
+            cout<< sum_time2/n<<endl;
+	    return false;
+	}
+	else if(PLAY_FLAG) {
+            return true;
+        }
+    }
+    cout<<"conway time"<<endl;
+    cout<< sum_time/con.frame_num<<endl;
+    cout<< sum_time2/con.frame_num<<endl;
+    return false;
+}
+
+bool run_ant (Ant ant, Canvas * canvas, int interval) {
+    int sum_time =0;
+    int sum_time2 =0;
+    for(int n=0; n<ant.frame_num; ++n) {
+	auto start = high_resolution_clock::now();
+        ant.evolve();
+	auto start2 = high_resolution_clock::now();
+        for (int i=0; i<ant.size; ++i) {
+            for (int j=0; j<ant.size; ++j) {
+		if (ant.frame.sframe[i][j]) {
+                    canvas -> SetPixel(i, j, ant.global_col[0], ant.global_col[1], ant.global_col[2]);
+		}
+		else {
+                    canvas -> SetPixel(i,j, 0, 0, 0); 
+		}
+            }
+        }
+        canvas -> SetPixel(ant.particle.pos[1], ant.particle.pos[0], ant.particle.col[0], ant.particle.col[1], ant.particle.col[2]);
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start);
+	auto duration2 = duration_cast<microseconds>(stop - start2);
+	sum_time += duration.count();
+	sum_time2 += duration2.count();
+
+        usleep(interval);
+        if (PLAY_FLAG) {
+            return true;
+        }
+    }
+    cout<<"ant time"<<endl;
+    cout<< sum_time/ant.frame_num<<endl;
+    cout<< sum_time2/ant.frame_num<<endl;
+    return false;
+}
+bool run_sand (Sand sand, Canvas * canvas, int interval) {
+    int height;
+    int count =0;
+    int sum_time =0;
+    int sum_time2 =0;
+    while(!sand.frame.sframe[sand.size/4][sand.size/2]) {
+	++count;
+	auto start = high_resolution_clock::now();
+        if (sand.stable) {
+            sand.next_grain();
+        }
+        else {
+            sand.evolve();
+        }
+	auto start2 = high_resolution_clock::now();
+        for (int i=0; i<sand.size; ++i) {
+            for (int j=0; j<sand.size; ++j) {
+		height = min(sand.frame.sframe[i][j], 4);
+                canvas -> SetPixel(i, j, sand.cols[height][0], sand.cols[height][1], sand.cols[height][2]);
+            }
+        }
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start);
+	auto duration2 = duration_cast<microseconds>(stop - start2);
+	sum_time += duration.count();
+	sum_time2 += duration2.count();
+        usleep(interval);
+        if (PLAY_FLAG) {
+            return true;
+        }
+    }
+    cout<<"sand time"<<endl;
+    cout<< sum_time/count<<endl;
+    cout<< sum_time2/count<<endl;
+    return false;
+}
+
+bool run_bounce (Bounce bounce, Canvas * canvas, int interval) {
+    vector<int> mode;
+    int sum_time =0;
+    int sum_time2 =0;
+    for(int i=0; i<bounce.frame_num; i++) {
+	auto start = high_resolution_clock::now();
+        bounce.evolve();
+        mode = bounce.mode(bounce.particles);
+        bounce.frame.create(bounce.particles);
+    
+	auto start2 = high_resolution_clock::now();
+        for (int i=bounce.size-4; i<bounce.size; ++i) {
+            for (int j=bounce.size-4; j<bounce.size; ++j) {
+                bounce.frame.frame[i][j] = mode;
+            }
+        }
+    
+        for (int i=0; i<bounce.size; ++i) {
+            for (int j=0; j<bounce.size; ++j) {
+                canvas -> SetPixel(i,j, bounce.frame.frame[i][j][0], bounce.frame.frame[i][j][1], bounce.frame.frame[i][j][2]);
+            }
+        }
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start);
+	auto duration2 = duration_cast<microseconds>(stop - start2);
+	sum_time += duration.count();
+	sum_time2 += duration2.count();
+    
+        usleep(interval);
+        bounce.frame.clear();
+        if (PLAY_FLAG) {
+            return true;
+        }
+    }
+    cout<<"bounce time"<<endl;
+    cout<< sum_time/bounce.frame_num<<endl;
+    cout<< sum_time2/bounce.frame_num<<endl;
+    return false;
+}
+
+bool run_scatter (Scatter scatter, Canvas * canvas, int interval) {
+    int count =0;
+    int sum_time =0;
+    int sum_time2 =0;
+    while (scatter.balls.size()) {
+	++count;
+	auto start = high_resolution_clock::now();
+        scatter.evolve();
+        scatter.frame.create(scatter.balls);
+	auto start2 = high_resolution_clock::now();
+    
+        for (int i=0; i<scatter.size; ++i) {
+            for (int j=0; j<scatter.size; ++j) {
+        	if (scatter.pin_frame[j][i]) {
+                    canvas -> SetPixel(i, j, scatter.pin_col[0], scatter.pin_col[1], scatter.pin_col[2]); 
+        	}
+        	else if (scatter.static_balls_frame[i][j] != scatter.frame.black) {
+                    canvas -> SetPixel(i, j, scatter.static_balls_frame[i][j][0], scatter.static_balls_frame[i][j][1], scatter.static_balls_frame[i][j][2]);
+        	}
+        	else {
+                    canvas -> SetPixel(i, j, scatter.frame.frame[i][j][0], scatter.frame.frame[i][j][1], scatter.frame.frame[i][j][2]);
+        	}
+            }
+        }
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start);
+	auto duration2 = duration_cast<microseconds>(stop - start2);
+	sum_time += duration.count();
+	sum_time2 += duration2.count();
+        usleep(interval);
+        scatter.frame.clear();
+        if (PLAY_FLAG) {
+            return true;
+        }
+    }
+    cout<<"scatter time"<<endl;
+    cout<< sum_time/count<<endl;
+    cout<< sum_time2/count<<endl;
+    return false;
+}
+bool run_star (Star star, Canvas * canvas, int interval){
+    int sum_time =0;
+    int sum_time2 =0;
+    for (int n=0; n<star.frame_num; n++) {
+	auto start = high_resolution_clock::now();
+        star.evolve();
+	auto start2 = high_resolution_clock::now();
+        for (int i=0; i<star.stars.size(); ++i) {
+            canvas -> SetPixel(star.stars[i].pos[0], star.stars[i].pos[1], star.stars[i].col[0], star.stars[i].col[1], star.stars[i].col[2]);
+        }
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start);
+	auto duration2 = duration_cast<microseconds>(stop - start2);
+	sum_time += duration.count();
+	sum_time2 += duration2.count();
+        usleep(interval);
+        if (PLAY_FLAG) {
+            return true;
+        }
+    }
+    cout<<"bounce time"<<endl;
+    cout<< sum_time/star.frame_num<<endl;
+    cout<< sum_time2/star.frame_num<<endl;
+    return false;
 }
 
 int main(int argc, char * argv[]) {
@@ -37,7 +259,7 @@ int main(int argc, char * argv[]) {
     cout << "initialising..." << endl;
     srand(time(0));
 
-    std::thread thread_obj(trd, "var/PLAY_FLAG");
+    thread thread_obj(trd, "var/play_flag", 100);
     RGBMatrix::Options defaults;
     defaults.hardware_mapping = "regular";
     defaults.rows = 64;
@@ -54,46 +276,23 @@ int main(int argc, char * argv[]) {
 
     while (true) {
         while(PLAY_FLAG) {
-            usleep(50*1000);
+            usleep(50);
         }
         Canvas *canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &defaults, &run_defaults);
-        conway_class con;
-        ant_class ant;
-        sand_class sand;
-        bounce_class bounce;
-        scatter_class scatter;
-        rain_class rain;
-        star_class star;
-        virtual_frame_class vframe;
+        Conway conway;
+        Ant ant;
+        Sand sand;
+        Bounce bounce;
+        Scatter scatter;
+        Star star;
+        Frame vframe;
 
         cout << "starting conway" << endl;
-        con.frame_num = 3000;
-        con.col = {rand()%256, rand()%256, rand()%256};
-        con.initialise();
+        conway.frame_num = 3000;
+        conway.initialise();
 
-        for(int n=0; n<con.frame_num; ++n) {
-            con.next_frame();
-            for (int i=0; i<con.size; ++i) {
-                for(int j=0; j<con.size; ++j) {
-                    if(con.frame[i][j] == 1) {
-                        vframe.frame[i][j] = con.col;
-                    }
-                }
-            }
-            vframe.wild(con.wild);
-            for (int i=0; i<vframe.size; ++i) {
-                for (int j=0; j<vframe.size; ++j) {
-                    canvas -> SetPixel(i,j, vframe.frame[i][j][0], vframe.frame[i][j][1], vframe.frame[i][j][2]);
-                }
-            }
-            usleep(110*1000);
-            vframe.clear();
-            if(con.stable || PLAY_FLAG) {
-                break;
-            }
-        }
-
-        if(PLAY_FLAG) {
+	bool tst = run_conway(conway, canvas, 110);
+        if(tst) {
             cout << "spotify flag is detected, killing patterns" << endl;
             delete canvas;
             continue;
@@ -101,233 +300,65 @@ int main(int argc, char * argv[]) {
 
         cout << "starting ant pattern" << endl;
         ant.frame_num = 4000;
-        ant.start_num = 2;
-        ant.trail_col = {rand()%256, rand()%256, rand()%256};
-        ant.col = {255, 255, 255};
         ant.initialise();
 
-        for(int n=0; n<ant.frame_num; ++n) {
-            ant.next_frame();
-            for (int i=0; i<ant.size; ++i) {
-                for(int j=0; j<ant.size; ++j) {
-                    if(ant.frame[i][j] == 1) {
-                        vframe.frame[i][j] = ant.trail_col;
-                    }
-                }
-            }
-            vframe.frame[ant.ypos][ant.xpos] = ant.col;
-            for (int i=0; i<vframe.size; ++i) {
-                for (int j=0; j<vframe.size; ++j) {
-                    canvas -> SetPixel(i,j, vframe.frame[i][j][0], vframe.frame[i][j][1], vframe.frame[i][j][2]);
-                }
-            }
+	bool tst1 = run_ant(ant, canvas, 50);
 
-            usleep(40*1000);
-            vframe.clear();
-            if (PLAY_FLAG) {
-                break;
-            }
-        }
-        if(PLAY_FLAG) {
+        if(tst1) {
             cout << "spotify flag is detected, killing patterns" << endl;
             delete canvas;
             continue;
         }
+
         cout << "starting sand pattern" << endl;
         canvas -> Clear();
-        sand.col_1r = 0;
-        sand.col_1g = 0;
-        sand.col_1b = 80;
-        sand.col_2r = 0;
-        sand.col_2g = 80, sand.col_2b = 40;
-        sand.col_3r = 100;
-        sand.col_3g = 100;
-        sand.col_3b = 0;
-        sand.col_4r = 255;
-        sand.col_4g = 0;
-        sand.col_4b = 0;
-        if (!rand()%3) {
-            sand.wild = false;
-        }
-        while(!sand.pile[sand.size/4][sand.size/2]) {
-            if (sand.stable) {
-                sand.next_grain();
-            }
-            else {
-                sand.evolve();
-            }
-            for (int i=0; i<sand.size; ++i) {
-                for (int j=0; j<sand.size; ++j) {
-                    switch(sand.pile[i][j]) {
-                    case 0:
-                        canvas -> SetPixel(i, j, 0, 0, 0);
-                        break;
-                    case 1:
-                        canvas -> SetPixel(i, j, sand.col_1r, sand.col_1g, sand.col_1b);
-                        break;
-                    case 2:
-                        canvas -> SetPixel(i, j, sand.col_2r, sand.col_2g, sand.col_2b);
-                        break;
-                    case 3:
-                        canvas -> SetPixel(i, j, sand.col_3r, sand.col_3g, sand.col_3b);
-                        break;
-                    default:
-                        canvas -> SetPixel(i, j, sand.col_4r, sand.col_4g, sand.col_4b);
-                        break;
-                    }
-                }
-            }
-            usleep(20*1000);
-            if (PLAY_FLAG) {
-                break;
-            }
-        }
-        if (PLAY_FLAG) {
+
+        sand.wild = (rand()%3 == 0);
+
+	bool tst2 = run_sand(sand, canvas, 40);
+        if (tst2) {
             cout << "spotify flag is detected, killing patterns" << endl;
             delete canvas;
             continue;
         }
+
         cout << "starting ball pattern" << endl;
         bounce.num_balls = 200;
+	bounce.frame_num = 4000;
         bounce.initialise();
-
-        for(int i=0; i<4000; i++) {
-            bounce.evolve();
-            bounce.mode_func();
-            vframe.create(bounce.balls);
-            for (int i=bounce.size-4; i<bounce.size; ++i) {
-                for (int j=bounce.size-4; j<bounce.size; ++j) {
-                    vframe.frame[i][j] = bounce.mode;
-                }
-            }
-
-            for (int i=0; i<vframe.size; ++i) {
-                for (int j=0; j<vframe.size; ++j) {
-                    canvas -> SetPixel(i,j, vframe.frame[i][j][0], vframe.frame[i][j][1], vframe.frame[i][j][2]);
-                }
-            }
-
-            usleep(60*1000);
-            vframe.clear();
-            if (PLAY_FLAG) {
-                break;
-            }
-        }
-        if(PLAY_FLAG) {
+	bool tst3 = run_bounce(bounce, canvas, 60);
+        if(tst3) {
             cout << "spotify flag is detected, killing patterns" << endl;
             delete canvas;
             continue;
         }
 
+	bool tst4;
         cout << "starting scatter pattern" << endl;
-        scatter.ball_col1 = {255,0,0};
-        scatter.ball_col2_1 = {0,130,100};
-        scatter.ball_col2_1 = {120,190,21};
-        scatter.ball_col2_2 = {0,180,20};
-        scatter.pin_col = {0,0,150};
-
         for (int k=0; k<3; ++k) {
-            if (!rand()%2) {
-                scatter.num_streams=1;
-            }
-            else {
-                scatter.num_streams=2;
-            }
-
-            scatter.initialise();
-
-            for (int n=0; n<scatter.num_balls*2 + scatter.size+2; ++n) {
-                scatter.evolve();
-                vframe.create(scatter.balls);
-                vframe.create(scatter.pins);
-                for (int i=0; i<scatter.size; ++i) {
-                    for (int j=0; j<scatter.size; ++j) {
-                        canvas -> SetPixel(i, j, vframe.frame[i][j][0], vframe.frame[i][j][1], vframe.frame[i][j][2]);
-                    }
-                }
-                usleep(90*1000);
-                vframe.clear();
-                if (PLAY_FLAG) {
-                    break;
-                }
-            }
-            if (PLAY_FLAG) {
-                break;
-            }
-        }
-        if(PLAY_FLAG) {
-            cout << "spotify flag is detected, killing patterns" << endl;
-            delete canvas;
-            continue;
-        }
-        cout << "starting rain pattern" << endl;
-        rain.surface_col = {0,10,20};
-        rain.water_col = {0,0,16};
-        rain.raise_level = 250;
-        rain.initialise();
-        while(rain.water_level != 1) {
-            rain.evolve();
-            for (int i=0; i<rain.size; ++i) {
-                for (int j=rain.size; j>rain.water_level+rain.water_surface; --j) {
-                    if ( j>-1 && j<64) {
-                        vframe.frame[i][j] = rain.water_col;
-                    }
-                }
-                for (int j=rain.water_level; j<rain.water_level+rain.water_surface+1; ++j) {
-                    if (j>-1 && j<64) {
-                        vframe.frame[i][j] = rain.surface_col;
-                    }
-                }
-            }
-            for (int i=0; i<rain.max_drops; ++i) {
-                if(rain.rain[i].action) {
-                    vframe.frame[rain.rain[i].pos[1]-1][rain.rain[i].pos[0]-1] = rain.rain[i].col;
-                    vframe.frame[rain.rain[i].pos[1]-1][rain.rain[i].pos[0]+1] = rain.rain[i].col;
-                    vframe.frame[rain.rain[i].pos[1]+1][rain.rain[i].pos[0]-1] = rain.rain[i].col;
-                    vframe.frame[rain.rain[i].pos[1]+1][rain.rain[i].pos[0]+1] = rain.rain[i].col;
-                }
-                else if(rain.rain[i].pos[0] > -1) {
-                    vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]] = rain.rain[i].col;
-                    vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]-1] = {int(rain.rain[i].col[0]*0.5),int(rain.rain[i].col[1]*0.5),int(rain.rain[i].col[2]*0.5)};
-                    vframe.frame[rain.rain[i].pos[1]][rain.rain[i].pos[0]-1] = {int(rain.rain[i].col[0]*0.2),int(rain.rain[i].col[1]*0.2),int(rain.rain[i].col[2]*0.2)};
-                }
-            }
-
-            for (int i=0; i<rain.size; ++i) {
-                for (int j=0; j<rain.size; ++j) {
-                    canvas -> SetPixel(i, j, vframe.frame[i][j][0], vframe.frame[i][j][1], vframe.frame[i][j][2]);
-                }
-            }
-            usleep(12*1000);
-            vframe.clear();
-            if (PLAY_FLAG) {
+            scatter.initialise(1 + rand()%2);
+	    tst4 = run_scatter(scatter, canvas, 90);
+	    canvas -> Clear();
+            if(tst4) {
                 cout << "spotify flag is detected, killing patterns" << endl;
-                break;
+                delete canvas;
+                continue;
             }
-        }
-        if (PLAY_FLAG) {
-            cout << "spotify flag is detected, killing patterns" << endl;
-            delete canvas;
-            continue;
-        }
-        canvas -> Clear();
+	}
+	
+        cout << "starting star pattern" << endl;
         star.decay_prob = 10;
         star.max_brightness = 180;
-        star.num = 160;
-        star.size = 64;
-	star.frame_num = 40000;
+        star.num_stars = 160;
+	star.frame_num = 10000;
         star.initialise();
-        for (int n=0; n<star.frame_num; n++) {
-            star.evolve();
-            for (int i=0; i<star.num; ++i) {
-                canvas -> SetPixel(star.stars[i].pos[0], star.stars[i].pos[1], star.stars[i].col[0], star.stars[i].col[1], star.stars[i].col[2]);
-            }
-            usleep(15*1000);
-            if (PLAY_FLAG) {
-                cout << "spotify flag is detected, killing patterns" << endl;
-                break;
-            }
+	bool tst5 = run_star(star, canvas, 15);
+        if(tst5) {
+            cout << "spotify flag is detected, killing patterns" << endl;
+            delete canvas;
+            continue;
         }
+
 
         delete canvas;
         cout << "end of patterns, restarting" << endl;
