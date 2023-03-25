@@ -322,7 +322,7 @@ int main(int argc, char * argv[]) {
     RunSand sand;
     sand.interval = 20;
     RunBounce bounce;
-    sand.interval = 70;
+    bounce.interval = 70;
     bounce.num_balls = 200;
     bounce.frame_num = 4000;
     RunScatter scatter;
