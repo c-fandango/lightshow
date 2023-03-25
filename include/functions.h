@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 using namespace std;
 
 class Particle {
@@ -34,6 +35,8 @@ class Pattern {
         int prob = 60;
 	bool wild = false;
 	bool stable = false;
+	virtual void run(void *) {};
+	virtual void initialise() {};
         vector<int> global_col;
 };
 
@@ -67,12 +70,12 @@ class Bounce:public Pattern {
         vector<int> mode_col = {0,0,0};
         void initialise();
         void evolve();
-        //vector<int> mode(vector<Particle> balls);
 };
 
 class Scatter:public Pattern {
     public:
         int num_rows = 17;
+	int num_streams;
 
         vector<int> pin_col = {0,0,150};
         vector<vector<int>> ball_cols = {{255,0,0}, {30,120,35}, {0,200,40}};
@@ -80,7 +83,7 @@ class Scatter:public Pattern {
 	vector<vector<vector<int>>> static_balls_frame; 
 	vector<vector<int>> pin_frame = frame.sframe; 
     
-        void initialise(int num_streams);
+        void initialise();
         void evolve();
 };
 
