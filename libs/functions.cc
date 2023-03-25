@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <unistd.h>
+#include <map>
 using namespace std;
 
 void Frame::create(vector<Particle> input) {
@@ -56,13 +57,14 @@ void Conway::initialise() {
             frame.sframe[i][j] = rand()%2;
         }
     }
+    old_frames = {frame.blank_sframe, frame.blank_sframe};
     global_col = {rand()%256, rand()%256, rand()%256};
     wild = (rand()%prob == 0);
 }
 
 void Conway::evolve() {
-    frame_prev_2 = frame_prev;
-    frame_prev = frame.sframe;
+    old_frames[1] = old_frames[0];
+    old_frames[0] = frame.sframe;
     vector<vector<int>> frame_bc = wrap_frame(frame.sframe);
     int a = 0, b = 0, c = 0, sum = 0;
     for(int i=0; i<size; ++i) {
@@ -73,10 +75,7 @@ void Conway::evolve() {
             b = c;
             c = frame_bc[i][j+2] + frame_bc[i+1][j+2] + frame_bc[i+2][j+2];
             sum = a + b + c;
-            if (sum == 3) {
-                frame.sframe[i][j] = 1;
-            }
-            else if (sum == 4 && frame_bc[i+1][j+1]) {
+            if (sum == 3 || (sum == 4 && frame_bc[i+1][j+1])) {
                 frame.sframe[i][j] = 1;
             }
             else {
@@ -84,7 +83,7 @@ void Conway::evolve() {
             }
         }
     }
-    stable = (frame.sframe == frame_prev_2);
+    stable = (frame.sframe == old_frames[1]);
 }
 
 void Ant::initialise() {
@@ -98,6 +97,12 @@ void Ant::initialise() {
 }
 
 void Ant::evolve() {
+    particle.pos[0] = (particle.pos[0] + size)%size;  //because mod in cpp is weird
+    particle.pos[1] = (particle.pos[1] + size)%size;
+    particle.orientation += 1 + 2*(frame.sframe[particle.pos[1]][particle.pos[0]]);
+    particle.orientation %= 4;
+    ++frame.sframe[particle.pos[1]][particle.pos[0]];
+    frame.sframe[particle.pos[1]][particle.pos[0]] %= 2;
     switch(particle.orientation) {
     case 0:
         ++particle.pos[1];
@@ -112,22 +117,6 @@ void Ant::evolve() {
         --particle.pos[0];
         break;
     }
-    if ( !((particle.pos[0] + 1)%size) || !((particle.pos[1] + 1)%size) ) {
-        global_col = {rand()%256, rand()%256, rand()%256};
-    }
-    particle.pos[0] = (particle.pos[0] + size)%size;  //because mod in cpp is weird
-    particle.pos[1] = (particle.pos[1] + size)%size;
-    switch(frame.sframe[particle.pos[1]][particle.pos[0]]) {
-    case 1:
-        particle.orientation += 3; 
-        break;
-    case 0:
-        ++particle.orientation; 
-        break;
-    }
-    particle.orientation %= 4;
-    ++frame.sframe[particle.pos[1]][particle.pos[0]];
-    frame.sframe[particle.pos[1]][particle.pos[0]] %= 2;
 }
 
 void Sand::next_grain() {
@@ -174,53 +163,55 @@ void Bounce::initialise() {
 }
 
 void Bounce::evolve() {
+    Particle ball;
+    map <vector<int>, int> col_counts;
+    int max_col_count = 0;
+    // this is ugly but it's fast
     for(int i=0; i<particles.size(); ++i) {
-        particles[i].pos[0] += particles[i].vel[0];
-        particles[i].pos[1] += particles[i].vel[1];
-        if ( particles[i].pos[0] < 0 || particles[i].pos[0] > size - 1 ) {
-            particles[i].pos[0] -= 2*(particles[i].pos[0]%(size-1));
-            particles[i].vel[0] *= -1;
+	ball = particles[i];
+	
+        ball.pos[0] += ball.vel[0];
+        ball.pos[1] += ball.vel[1];
+        if ( ball.pos[0] < 0 || ball.pos[0] > size - 1 ) {
+            ball.pos[0] -= 2*(ball.pos[0]%(size-1));
+            ball.vel[0] *= -1;
         }
-        if ( particles[i].pos[1] < 1 || particles[i].pos[1] > size - 1 ) {
-            particles[i].pos[1] -= 2*(particles[i].pos[1]%(size-1));
-            particles[i].vel[1] *= -1;
+        if ( ball.pos[1] < 1 || ball.pos[1] > size - 1 ) {
+            ball.pos[1] -= 2*(ball.pos[1]%(size-1));
+            ball.vel[1] *= -1;
         }
-    }
-    for (int i=0; i<particles.size()-1; ++i) {
-        for (int j=i+1; j<particles.size(); ++j) {
-            if (particles[i].pos == particles[j].pos) {
-                swap(particles[i].vel, particles[j].vel);
-                if(rand()%2) {
-                    particles[i].col = particles[j].col;
-                }
-                else {
-                    particles[j].col = particles[i].col;
-                }
-            }
-        }
-    }
-}
+	int j = i-1;
+	// insertion sort list for time save - create gap
+	while (j>=0 && (particles[j].pos[0] > ball.pos[0] || (particles[j].pos[0] == ball.pos[0] && particles[j].pos[1] > ball.pos[1]))) {
+	    particles[j+1] = particles[j];
+	    --j;
+	}
+	// collision
+	if (j>=0 && particles[j].pos == ball.pos) {
 
-vector<int> Bounce::mode( vector<Particle> balls ) {
-    vector<Particle> elements = {balls[0]};
-    Particle max_col;
-    for (int i=0; i<balls.size(); ++i) {
-        for (int j=0; j<elements.size(); ++j) {
-            if (balls[i].col == elements[j].col) {
-		++elements[j].value;
-		if (elements[j].value > max_col.value){
-		    max_col = elements[j];
-		}
-                break;
-            }
-            else if (j == elements.size() - 1) {
-		Particle element = balls[i];
-		element.value = 1;
-		elements.push_back(element);
-            }
-        }
+           swap(ball.vel, particles[j].vel);
+           if(rand()%2) {
+               ball.col = particles[j].col;
+           }
+           else {
+               particles[j].col = ball.col;
+           }
+       }
+       //insert ball into gap
+       particles[j+1] = ball;
+
+       // update mode
+       ++col_counts[ball.col];
+       max_col_count = max(max_col_count, col_counts[ball.col]);
     }
-    return max_col.col;
+
+    //calculate mode
+    for ( auto k = col_counts.begin(); k != col_counts.end(); ++k) {
+        if (k -> second == max_col_count) {
+	    mode_col = k -> first;
+	    return;
+	}
+    }
 }
 
 void Scatter::initialise(int num_streams) {

@@ -1,7 +1,5 @@
-
 #include <vector>
 using namespace std;
-
 
 class Particle {
     public:
@@ -18,8 +16,9 @@ class Frame {
         int size = 64;
 	vector<int> black = {0,0,0};
         vector<vector<vector<int>>> blank_frame = vector<vector<vector<int>>> (size, vector<vector<int>>(size, black));
-        vector<vector<int>> sframe = vector<vector<int>> (size, vector<int>(size, 0));
         vector<vector<vector<int>>> frame = blank_frame; 
+        vector<vector<int>> blank_sframe = vector<vector<int>> (size, vector<int>(size, 0));
+        vector<vector<int>> sframe = blank_sframe; 
         void wild(bool input);
         void create(vector<Particle> input);
         void clear();
@@ -40,8 +39,9 @@ class Pattern {
 
 class Conway:public Pattern {
     private:
-        vector<vector<int>> wrap_frame(vector<vector<int>> input), frame_prev, frame_prev_2;
+        vector<vector<int>> wrap_frame(vector<vector<int>> input);
     public:
+        vector<vector<vector<int>>> old_frames; 
         void initialise();
         void evolve();
 };
@@ -64,9 +64,10 @@ class Sand:public Pattern {
 class Bounce:public Pattern {
     public:
         int num_balls;
+        vector<int> mode_col = {0,0,0};
         void initialise();
         void evolve();
-        vector<int> mode(vector<Particle> balls);
+        //vector<int> mode(vector<Particle> balls);
 };
 
 class Scatter:public Pattern {
