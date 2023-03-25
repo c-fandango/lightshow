@@ -65,6 +65,7 @@ void Conway::initialise() {
 void Conway::evolve() {
     old_frames[1] = old_frames[0];
     old_frames[0] = frame.sframe;
+
     vector<vector<int>> frame_bc = wrap_frame(frame.sframe);
     int a = 0, b = 0, c = 0, sum = 0;
     for(int i=0; i<size; ++i) {
@@ -214,7 +215,7 @@ void Bounce::evolve() {
     }
 }
 
-void Scatter::initialise(int num_streams) {
+void Scatter::initialise() {
     Particle ball_one;
     Particle ball_two;
     vector<Particle> ball_opts;
